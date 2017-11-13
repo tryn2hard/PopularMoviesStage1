@@ -1,10 +1,13 @@
 package com.example.robot.popularmoviesstage1;
 
+import android.content.Context;
+import android.content.Intent;
 import android.icu.text.UnicodeSetSpanner;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -15,7 +18,7 @@ import android.widget.Toast;
 
 import com.example.robot.popularmoviesstage1.MovieAdapter;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
     private RecyclerView mMovieRecyclerView;
 
@@ -36,7 +39,7 @@ public class MainActivity extends AppCompatActivity  {
         mMovieRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mMovieRecyclerView.setHasFixedSize(true);
 
-        mMovieAdapter = new MovieAdapter();
+        mMovieAdapter = new MovieAdapter(this);
         mMovieRecyclerView.setAdapter(mMovieAdapter);
 
         mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
@@ -94,5 +97,14 @@ public class MainActivity extends AppCompatActivity  {
             Toast.makeText(this, "Popularity Selected", Toast.LENGTH_LONG).show();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(String selectedMovie) {
+        Context context = this;
+        Class destinationClass = MovieDetail.class;
+        Intent intentToStartMovieDetailActivity = new Intent(context, destinationClass);
+        intentToStartMovieDetailActivity.putExtra(Intent.EXTRA_TEXT, selectedMovie);
+        startActivity(intentToStartMovieDetailActivity);
     }
 }
