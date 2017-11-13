@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Popular Movies Stage 1</string>
+
+    <!-- Error message to displayed when there is a problem -->
+     <!-- retrieving data from OpenMovie -->
+    <string name="error_message">An error has occurred. Please try clicking REFRESH again. </string>
 </resources>
