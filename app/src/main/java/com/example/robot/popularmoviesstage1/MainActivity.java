@@ -1,12 +1,17 @@
 package com.example.robot.popularmoviesstage1;
 
+import android.icu.text.UnicodeSetSpanner;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.robot.popularmoviesstage1.MovieAdapter;
 
@@ -69,5 +74,25 @@ public class MainActivity extends AppCompatActivity  {
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
 
+        inflater.inflate(R.menu.sort_by, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int sortSelect = item.getItemId();
+
+        if (sortSelect == R.id.sort_by_highest){
+            Toast.makeText(this, "Highest Selected", Toast.LENGTH_LONG).show();
+        }
+        if (sortSelect == R.id.sort_by_popularity){
+            Toast.makeText(this, "Popularity Selected", Toast.LENGTH_LONG).show();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }
