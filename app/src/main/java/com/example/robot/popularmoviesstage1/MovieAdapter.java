@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.view.View.OnClickListener;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Created by Robot on 11/13/2017.
@@ -16,7 +19,8 @@ import android.view.View.OnClickListener;
 
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    private String[] mMovieData = {"Thor 0", "Minions 0", "Thor 1", "Minions 1"};
+    private ArrayList<Movies> mMovieData;
+
     /*
     * An on-click handler that we've defined to make it easy for an Activity to interface with
     * our RecyclerView
@@ -27,7 +31,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      * The interface that receives onClick messages.
      */
     public interface MovieAdapterOnClickHandler {
-        void onClick(String selectedMovie);
+        void onClick(Movies selectedMovie);
     }
 
     /**
@@ -58,7 +62,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            String movieSelected = mMovieData[adapterPosition];
+            Movies movieSelected = mMovieData.get(adapterPosition);
             mClickHandler.onClick(movieSelected);
 
         }
@@ -89,5 +93,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     @Override
     public int getItemCount() {
         return 4;
+    }
+
+    /**
+     * This method is used to set the movie data on a MovieAdapter if we've already
+     * created one. This is handy when we get new data from the web but don't want to create a
+     * new ForecastAdapter to display it.
+     *
+     * @param movieData The new weather data to be displayed.
+     */
+    public void setMovieData(ArrayList<Movies> movieData) {
+        mMovieData = movieData;
+        notifyDataSetChanged();
     }
 }

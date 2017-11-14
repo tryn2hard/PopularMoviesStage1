@@ -11,7 +11,7 @@ public class MovieDetail extends AppCompatActivity {
     private static final String TAG = MovieDetail.class.getSimpleName();
 
     private TextView mTextView;
-    private String mMovieTitle;
+    private Movies mMovieDetailData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,10 +25,16 @@ public class MovieDetail extends AppCompatActivity {
         Intent intentThatStartedThisActivity = getIntent();
 
         if (intentThatStartedThisActivity != null) {
-            if (intentThatStartedThisActivity.hasExtra(Intent.EXTRA_TEXT)) {
-                mMovieTitle = intentThatStartedThisActivity.getStringExtra(Intent.EXTRA_TEXT);
-                Log.d(TAG, mMovieTitle);
-                mTextView.setText(mMovieTitle);
+            Log.d(TAG, "falling through the first if statement");
+            if (intentThatStartedThisActivity.hasExtra("Test")) {
+                 Bundle data = getIntent().getExtras();
+                 mMovieDetailData = data.getParcelable("Test");
+                 Log.d(TAG, mMovieDetailData.getmTitle());
+                 mTextView.setText(mMovieDetailData.getmTitle() + "\n"
+                                    + mMovieDetailData.getmPlotSynopsis() + "\n"
+                                    + mMovieDetailData.getmPosterUrl() + "\n"
+                                    + mMovieDetailData.getmReleaseDate() + "\n"
+                                    + mMovieDetailData.getmVoteAverage());
             }
         }
     }

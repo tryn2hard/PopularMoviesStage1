@@ -18,7 +18,12 @@ import android.widget.Toast;
 
 import com.example.robot.popularmoviesstage1.MovieAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
+
+    private static ArrayList<Movies> mFakeData;
 
     private RecyclerView mMovieRecyclerView;
 
@@ -40,12 +45,56 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mMovieRecyclerView.setHasFixedSize(true);
 
         mMovieAdapter = new MovieAdapter(this);
+
         mMovieRecyclerView.setAdapter(mMovieAdapter);
+
+        loadFakeMovieData();
+
+        mMovieAdapter.setMovieData(mFakeData);
 
         mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
 
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
+
+    }
+
+    private void loadFakeMovieData(){
+
+        mFakeData = new ArrayList<Movies>();
+
+        mFakeData.add(new Movies(
+                "Thor: Ragnarok",
+                "Nothing",
+                "Thor is imprisoned on the other side of the universe and finds himself in a race against time to get back to Asgard to stop Ragnarok, " +
+                        "the destruction of his homeworld and the end of Asgardian civilization, at the hands of an all-powerful new threat, the ruthless Hela.\n" +
+                        "Featured Crew",
+                77,
+                2017));
+
+        mFakeData.add(new Movies(
+                "Minions",
+                "Nothing",
+                "Minions Stuart, Kevin and Bob are recruited by Scarlet Overkill, a super-villain who, alongside her inventor husband Herb," +
+                        " hatches a plot to take over the world.",
+                64,
+                2015));
+        mFakeData.add(new Movies(
+                "Thor: Ragnarok",
+                "Nothing",
+                "Thor is imprisoned on the other side of the universe and finds himself in a race against time to get back to Asgard to stop Ragnarok, " +
+                        "the destruction of his homeworld and the end of Asgardian civilization, at the hands of an all-powerful new threat, the ruthless Hela.\n" +
+                        "Featured Crew",
+                77,
+                2017));
+
+        mFakeData.add(new Movies(
+                "Minions",
+                "Nothing",
+                "Minions Stuart, Kevin and Bob are recruited by Scarlet Overkill, a super-villain who, alongside her inventor husband Herb," +
+                        " hatches a plot to take over the world.",
+                64,
+                2015));
 
     }
 
@@ -100,11 +149,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     @Override
-    public void onClick(String selectedMovie) {
+    public void onClick(Movies selectedMovie) {
         Context context = this;
         Class destinationClass = MovieDetail.class;
         Intent intentToStartMovieDetailActivity = new Intent(context, destinationClass);
-        intentToStartMovieDetailActivity.putExtra(Intent.EXTRA_TEXT, selectedMovie);
+        intentToStartMovieDetailActivity.putExtra("Test", selectedMovie);
         startActivity(intentToStartMovieDetailActivity);
     }
 }
