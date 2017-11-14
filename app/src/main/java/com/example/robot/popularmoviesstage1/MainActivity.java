@@ -3,6 +3,7 @@ package com.example.robot.popularmoviesstage1;
 import android.content.Context;
 import android.content.Intent;
 import android.icu.text.UnicodeSetSpanner;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,13 +18,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.robot.popularmoviesstage1.MovieAdapter;
+import com.example.robot.popularmoviesstage1.utilities.NetworkUtils;
+import com.example.robot.popularmoviesstage1.utilities.OpenMovieJsonUtils;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
-    private static ArrayList<Movies> mFakeData;
+    private static ArrayList<Movies> mMovieData;
 
     private RecyclerView mMovieRecyclerView;
 
@@ -48,54 +52,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         mMovieRecyclerView.setAdapter(mMovieAdapter);
 
-        loadFakeMovieData();
-
-        mMovieAdapter.setMovieData(mFakeData);
-
         mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
 
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
-
+        loadMovieData();
     }
 
-    private void loadFakeMovieData(){
+    private void loadMovieData(){
 
-        mFakeData = new ArrayList<Movies>();
-
-        mFakeData.add(new Movies(
-                "Thor: Ragnarok",
-                "Nothing",
-                "Thor is imprisoned on the other side of the universe and finds himself in a race against time to get back to Asgard to stop Ragnarok, " +
-                        "the destruction of his homeworld and the end of Asgardian civilization, at the hands of an all-powerful new threat, the ruthless Hela.\n" +
-                        "Featured Crew",
-                77,
-                2017));
-
-        mFakeData.add(new Movies(
-                "Minions",
-                "Nothing",
-                "Minions Stuart, Kevin and Bob are recruited by Scarlet Overkill, a super-villain who, alongside her inventor husband Herb," +
-                        " hatches a plot to take over the world.",
-                64,
-                2015));
-        mFakeData.add(new Movies(
-                "Thor: Ragnarok",
-                "Nothing",
-                "Thor is imprisoned on the other side of the universe and finds himself in a race against time to get back to Asgard to stop Ragnarok, " +
-                        "the destruction of his homeworld and the end of Asgardian civilization, at the hands of an all-powerful new threat, the ruthless Hela.\n" +
-                        "Featured Crew",
-                77,
-                2017));
-
-        mFakeData.add(new Movies(
-                "Minions",
-                "Nothing",
-                "Minions Stuart, Kevin and Bob are recruited by Scarlet Overkill, a super-villain who, alongside her inventor husband Herb," +
-                        " hatches a plot to take over the world.",
-                64,
-                2015));
-
+        showMovieDataView();
+        new FetchMovieTask().execute();
     }
 
     /**
@@ -124,6 +91,43 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mMovieRecyclerView.setVisibility(View.INVISIBLE);
         /* Then, show the error */
         mErrorMessageDisplay.setVisibility(View.VISIBLE);
+    }
+
+    public class FetchMovieTask extends AsyncTask<Void, Void, ArrayList<Movies>>{
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoadingIndicator.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected ArrayList<Movies> doInBackground(Void... voids) {
+
+            URL movieRequestUrl = NetworkUtils.buildUrl();
+
+            try{
+                String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
+
+                mMovieData = OpenMovieJsonUtils.getMovieFromJson(jsonMovieResponse);
+
+                return mMovieData;
+            } catch (Exception e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Movies> movies) {
+            mLoadingIndicator.setVisibility(View.INVISIBLE);
+            if(movies != null){
+                showMovieDataView();
+                mMovieAdapter.setMovieData(mMovieData);
+            } else{
+                showErrorMessage();
+            }
+        }
     }
 
     @Override

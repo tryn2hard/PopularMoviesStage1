@@ -22,7 +22,7 @@ public class Movies implements Parcelable{
     // member variables
     private String mTitle;
 
-    private int mReleaseDate;
+    private String mReleaseDate;
 
     private String mPosterUrl;
 
@@ -30,7 +30,7 @@ public class Movies implements Parcelable{
 
     private int mVoteAverage;
 
-    public Movies (String title, String posterUrl, String plotSynopsis, int releaseDate, int voteAverage){
+    public Movies (String title, String posterUrl, String plotSynopsis, String releaseDate, int voteAverage){
         mTitle = title;
         mPosterUrl = posterUrl;
         mPlotSynopsis = plotSynopsis;
@@ -46,11 +46,11 @@ public class Movies implements Parcelable{
         this.mTitle = mTitle;
     }
 
-    public int getmReleaseDate() {
+    public String getmReleaseDate() {
         return mReleaseDate;
     }
 
-    public void setmReleaseDate(int mReleaseDate) {
+    public void setmReleaseDate(String mReleaseDate) {
         this.mReleaseDate = mReleaseDate;
     }
 
@@ -82,7 +82,7 @@ public class Movies implements Parcelable{
         mTitle = in.readString();
         mPosterUrl = in.readString();
         mPlotSynopsis = in.readString();
-        mReleaseDate = in.readInt();
+        mReleaseDate = in.readString();
         mVoteAverage = in.readInt();
     }
 
@@ -95,9 +95,9 @@ public class Movies implements Parcelable{
     public void writeToParcel(Parcel dest, int i) {
         // Write data in any order
         dest.writeString(mTitle);
-        dest.writeString(mPlotSynopsis);
         dest.writeString(mPosterUrl);
-        dest.writeInt(mReleaseDate);
+        dest.writeString(mPlotSynopsis);
+        dest.writeString(mReleaseDate);
         dest.writeInt(mVoteAverage);
     }
 

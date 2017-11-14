@@ -10,17 +10,30 @@ public class MovieDetail extends AppCompatActivity {
 
     private static final String TAG = MovieDetail.class.getSimpleName();
 
-    private TextView mTextView;
-    private Movies mMovieDetailData;
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
 
+        Movies mMovieDetailData;
+        TextView mMovieTitle;
+        TextView mMoviePosterUrl;
+        TextView mMovieSynopsis;
+        TextView mMovieReleaseDate;
+        TextView mMovieRating;
 
 
-        mTextView = findViewById(R.id.tv_movie_title);
+        mMovieTitle = findViewById(R.id.tv_movie_title);
+
+        mMovieSynopsis = findViewById(R.id.tv_detail_synopsis);
+
+        mMovieReleaseDate = findViewById(R.id.tv_detail_release_date);
+
+        mMovieRating = findViewById(R.id.tv_detail_rating);
 
         Intent intentThatStartedThisActivity = getIntent();
 
@@ -29,12 +42,14 @@ public class MovieDetail extends AppCompatActivity {
             if (intentThatStartedThisActivity.hasExtra("Test")) {
                  Bundle data = getIntent().getExtras();
                  mMovieDetailData = data.getParcelable("Test");
-                 Log.d(TAG, mMovieDetailData.getmTitle());
-                 mTextView.setText(mMovieDetailData.getmTitle() + "\n"
-                                    + mMovieDetailData.getmPlotSynopsis() + "\n"
-                                    + mMovieDetailData.getmPosterUrl() + "\n"
-                                    + mMovieDetailData.getmReleaseDate() + "\n"
-                                    + mMovieDetailData.getmVoteAverage());
+
+                 mMovieTitle.setText(mMovieDetailData.getmTitle());
+
+                 mMovieRating.setText(Integer.toString(mMovieDetailData.getmVoteAverage()));
+
+                 mMovieReleaseDate.setText(mMovieDetailData.getmReleaseDate());
+
+                 mMovieSynopsis.setText(mMovieDetailData.getmPlotSynopsis());
             }
         }
     }
