@@ -13,7 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.example.robot.popularmoviesstage1.utilities.NetworkUtils;
 import com.example.robot.popularmoviesstage1.utilities.TMDBJsonUtils;
@@ -22,6 +22,8 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
+
+    private String sort_request = "popularity.desc";
 
     private static ArrayList<Movies> mMovieData;
 
@@ -98,9 +100,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
         @Override
-        protected ArrayList<Movies> doInBackground(Void... voids) {
+        protected ArrayList<Movies> doInBackground(Void...voids) {
 
-            URL movieRequestUrl = NetworkUtils.buildUrl();
+            URL movieRequestUrl = NetworkUtils.buildUrl(sort_request);
 
             try{
                 String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
@@ -140,10 +142,14 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         int sortSelect = item.getItemId();
 
         if (sortSelect == R.id.sort_by_highest){
-            Toast.makeText(this, "Highest Selected", Toast.LENGTH_LONG).show();
+           sort_request = "vote_count.desc";
+           mMovieAdapter.setMovieData(null);
+           loadMovieData();
         }
         if (sortSelect == R.id.sort_by_popularity){
-            Toast.makeText(this, "Popularity Selected", Toast.LENGTH_LONG).show();
+            sort_request = "popularity.desc";
+            mMovieAdapter.setMovieData(null);
+            loadMovieData();
         }
         return super.onOptionsItemSelected(item);
     }

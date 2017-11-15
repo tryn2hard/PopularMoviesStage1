@@ -29,7 +29,7 @@ public class NetworkUtils {
 
     private static final String sort_by_populartiy = "popularity.desc";
 
-    private static final String sort_by_rating = "";
+    private static final String sort_by_rating = "vote_count.desc";
 
     private static final String include_adult = "false";
 
@@ -46,11 +46,18 @@ public class NetworkUtils {
     final static String INCLUDE_VIDEO_PARAM = "include_video";
     final static String PAGE_PARAM = "page";
 
-    public static URL buildUrl(){
+    public static URL buildUrl(String sort_by){
+        String sort_request;
+        if(sort_by.contains("popularity")){
+            sort_request = sort_by_populartiy;
+        }
+        else{
+            sort_request = sort_by_rating;
+        }
         Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                 .appendQueryParameter(API_KEY, api_key)
                 .appendQueryParameter(LANGUAGE_PARAM, language)
-                .appendQueryParameter(SORT_BY_PARAM, sort_by_populartiy)
+                .appendQueryParameter(SORT_BY_PARAM, sort_request)
                 .appendQueryParameter(INCLUDE_ADULT_PARAM, include_adult)
                 .appendQueryParameter(INCLUDE_VIDEO_PARAM, include_video)
                 .appendQueryParameter(PAGE_PARAM, page)
