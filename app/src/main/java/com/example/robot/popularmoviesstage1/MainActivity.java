@@ -2,13 +2,11 @@ package com.example.robot.popularmoviesstage1;
 
 import android.content.Context;
 import android.content.Intent;
-import android.icu.text.UnicodeSetSpanner;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,13 +15,11 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.robot.popularmoviesstage1.MovieAdapter;
 import com.example.robot.popularmoviesstage1.utilities.NetworkUtils;
-import com.example.robot.popularmoviesstage1.utilities.OpenMovieJsonUtils;
+import com.example.robot.popularmoviesstage1.utilities.TMDBJsonUtils;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
@@ -109,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
             try{
                 String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
 
-                mMovieData = OpenMovieJsonUtils.getMovieFromJson(jsonMovieResponse);
+                mMovieData = TMDBJsonUtils.getMovieFromJson(jsonMovieResponse);
 
                 return mMovieData;
             } catch (Exception e){

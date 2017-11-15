@@ -11,36 +11,43 @@
         android:id="@+id/tv_movie_title"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight=".1"
-        android:paddingLeft="8dp"
-        android:paddingTop="8dp"
-        android:textSize="22sp"
-        tools:text="Title" />
+        android:layout_weight=".12"
+        android:paddingLeft="16dp"
+        android:textSize="45sp"
+        android:gravity="center_vertical"
+        tools:text="Title"
+        android:background="@color/colorAccent"
+        android:textColor="@color/text"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.4"
-        android:orientation="horizontal">
+        android:layout_weight="0.3"
+        android:orientation="horizontal"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp">
 
         <ImageView
             android:id="@+id/iv_detail_movie_poster"
-            android:layout_width="160dp"
-            android:layout_height="210dp"
-            android:adjustViewBounds="false"
-            android:scaleType="fitXY"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:paddingLeft="16dp"
+            android:scaleType="fitStart"
             app:srcCompat="@drawable/thor" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingLeft="8dp">
 
             <TextView
                 android:id="@+id/tv_detail_release_date"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
+                android:textSize="24sp"
                 tools:text="Release Date" />
 
             <TextView
@@ -48,6 +55,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="8dp"
+                android:textSize="24sp"
                 tools:text="Rating" />
 
         </LinearLayout>
@@ -64,17 +72,18 @@
             android:id="@+id/tv_detail_synopsis_header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="8dp"
+            android:paddingLeft="16dp"
             android:text="Synopsis"
-            android:textSize="22sp"/>
+            android:textSize="34sp"/>
 
         <TextView
             android:id="@+id/tv_detail_synopsis"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingLeft="8dp"
+            android:paddingLeft="16dp"
             android:paddingTop="8dp"
-            tools:text="TextView" />
+            tools:text="TextView"
+            android:textSize="14sp"/>
 
     </LinearLayout>
 

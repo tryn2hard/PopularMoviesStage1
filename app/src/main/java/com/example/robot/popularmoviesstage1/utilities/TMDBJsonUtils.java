@@ -1,6 +1,5 @@
 package com.example.robot.popularmoviesstage1.utilities;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.example.robot.popularmoviesstage1.Movies;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
  * Created by Robot on 11/14/2017.
  */
 
-public final class OpenMovieJsonUtils {
+public final class TMDBJsonUtils {
 
     public static ArrayList<Movies> getMovieFromJson(String movieJsonStr)
             throws JSONException {
@@ -64,7 +63,7 @@ public final class OpenMovieJsonUtils {
             JSONObject r = results.getJSONObject(i);
             String title = r.getString(TMDB_TITLE);
             Log.d("movie_title_JSON", title);
-            int vote_average = r.getInt(TMDB_VOTE_AVERAGE);
+            Double vote_average = r.getDouble(TMDB_VOTE_AVERAGE);
             String poster_path = r.getString(TMDB_POSTER_PATH);
             String backdrop_path = r.getString(TMDB_BACKDROP_PATH);
             String overview = r.getString(TMDB_OVERVIEW);

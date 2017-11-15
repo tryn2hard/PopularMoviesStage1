@@ -4,12 +4,18 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 public class MovieDetail extends AppCompatActivity {
 
     private static final String TAG = MovieDetail.class.getSimpleName();
 
+    private static final String IMAGE_BASE_URL = "https://image.tmdb.org/t/p/";
+
+    private static final String IMAGE_SIZE = "w342";
 
 
 
@@ -21,7 +27,7 @@ public class MovieDetail extends AppCompatActivity {
 
         Movies mMovieDetailData;
         TextView mMovieTitle;
-        TextView mMoviePosterUrl;
+        ImageView mMoviePoster;
         TextView mMovieSynopsis;
         TextView mMovieReleaseDate;
         TextView mMovieRating;
@@ -35,6 +41,8 @@ public class MovieDetail extends AppCompatActivity {
 
         mMovieRating = findViewById(R.id.tv_detail_rating);
 
+        mMoviePoster = findViewById(R.id.iv_detail_movie_poster);
+
         Intent intentThatStartedThisActivity = getIntent();
 
         if (intentThatStartedThisActivity != null) {
@@ -45,12 +53,27 @@ public class MovieDetail extends AppCompatActivity {
 
                  mMovieTitle.setText(mMovieDetailData.getmTitle());
 
-                 mMovieRating.setText(Integer.toString(mMovieDetailData.getmVoteAverage()));
+                 mMovieRating.setText(Double.toString(mMovieDetailData.getmVoteAverage()) + "/10");
 
                  mMovieReleaseDate.setText(mMovieDetailData.getmReleaseDate());
 
                  mMovieSynopsis.setText(mMovieDetailData.getmPlotSynopsis());
+
+                 String urlForPicasso = imageUrlBuilder(mMovieDetailData.getmPosterUrl());
+
+                 Log.d("Image test", urlForPicasso);
+
+                Picasso.with(this).load(urlForPicasso).into(mMoviePoster);
             }
         }
     }
+
+    public String imageUrlBuilder (String imagePath){
+        String finishedImagePath =  IMAGE_BASE_URL +
+                                    IMAGE_SIZE +
+                                    imagePath;
+
+        return finishedImagePath;
+    }
+
 }
