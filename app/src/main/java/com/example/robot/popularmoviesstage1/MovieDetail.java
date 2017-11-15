@@ -51,7 +51,7 @@ public class MovieDetail extends AppCompatActivity {
 
                  mMovieRating.setText(Double.toString(mMovieDetailData.getmVoteAverage()) + "/10");
 
-                 mMovieReleaseDate.setText(mMovieDetailData.getmReleaseDate());
+                 mMovieReleaseDate.setText(mMovieDetailData.getmReleaseDate().substring(0,4));
 
                  mMovieSynopsis.setText(mMovieDetailData.getmPlotSynopsis());
 
