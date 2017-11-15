@@ -13,12 +13,6 @@ public class MovieDetail extends AppCompatActivity {
 
     private static final String TAG = MovieDetail.class.getSimpleName();
 
-    private static final String IMAGE_BASE_URL = "https://image.tmdb.org/t/p/";
-
-    private static final String IMAGE_SIZE = "w342";
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,21 +53,13 @@ public class MovieDetail extends AppCompatActivity {
 
                  mMovieSynopsis.setText(mMovieDetailData.getmPlotSynopsis());
 
-                 String urlForPicasso = imageUrlBuilder(mMovieDetailData.getmPosterUrl());
+                 String urlForPicasso = Movies.imageUrlBuilderMediumSize(mMovieDetailData.getmPosterUrl());
 
                  Log.d("Image test", urlForPicasso);
 
                 Picasso.with(this).load(urlForPicasso).into(mMoviePoster);
             }
         }
-    }
-
-    public String imageUrlBuilder (String imagePath){
-        String finishedImagePath =  IMAGE_BASE_URL +
-                                    IMAGE_SIZE +
-                                    imagePath;
-
-        return finishedImagePath;
     }
 
 }

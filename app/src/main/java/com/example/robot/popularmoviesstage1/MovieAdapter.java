@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.view.View.OnClickListener;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,12 +82,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
-        if ( (position % 2) == 0 ) {
-            holder.mMovieImageView.setBackgroundResource(R.drawable.thor);
-        }
-        else {
-            holder.mMovieImageView.setBackgroundResource(R.drawable.minions);
-        }
+        Movies movieForThisPosition = mMovieData.get(position);
+        String posterUrl = movieForThisPosition.getmPosterUrl();
+        String finishedUrl = Movies.imageUrlBuilderLargeSize(posterUrl);
+        Context context = holder.mMovieImageView.getContext();
+        Picasso.with(context).load(finishedUrl).into(holder.mMovieImageView);
 
     }
 

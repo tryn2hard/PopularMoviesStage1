@@ -7,8 +7,9 @@
 
     <ImageView
         android:id="@+id/iv_movie_poster"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:src="@drawable/thor" />
+        tools:src="@drawable/thor"
+        android:scaleType="fitXY"/>
 
 </LinearLayout>

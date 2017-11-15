@@ -9,6 +9,12 @@ import android.os.Parcelable;
 
 public class Movies implements Parcelable{
 
+    private static final String IMAGE_BASE_URL = "https://image.tmdb.org/t/p/";
+
+    private static final String IMAGE_SIZE_DETAIL = "w342";
+
+    private static final String IMAGE_SIZE_ADAPTER = "w780";
+
     public static final Parcelable.Creator<Movies> CREATOR = new Parcelable.Creator<Movies>(){
         public Movies createFromParcel(Parcel in) {
             return new Movies(in);
@@ -99,6 +105,22 @@ public class Movies implements Parcelable{
         dest.writeString(mPlotSynopsis);
         dest.writeString(mReleaseDate);
         dest.writeDouble(mVoteAverage);
+    }
+
+    public static String imageUrlBuilderMediumSize (String imagePath){
+        String finishedImagePath =  IMAGE_BASE_URL +
+                IMAGE_SIZE_DETAIL +
+                imagePath;
+
+        return finishedImagePath;
+    }
+
+    public static String imageUrlBuilderLargeSize (String imagePath){
+        String finishedImagePath =  IMAGE_BASE_URL +
+                IMAGE_SIZE_ADAPTER +
+                imagePath;
+
+        return finishedImagePath;
     }
 
 }
