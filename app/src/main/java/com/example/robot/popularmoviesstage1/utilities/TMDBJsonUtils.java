@@ -34,27 +34,9 @@ public final class TMDBJsonUtils {
 
         final String TMDB_RELEASE_DATE = "release_date";
 
-        final String TMDB_MESSAGE_CODE = "cod";
-
         ArrayList<Movies> movies = new ArrayList<>();
 
         JSONObject moviesJson = new JSONObject(movieJsonStr);
-
-        /* Is there an error? */
-        if (moviesJson.has(TMDB_MESSAGE_CODE)) {
-            int errorCode = moviesJson.getInt(TMDB_MESSAGE_CODE);
-
-            switch (errorCode) {
-                case HttpURLConnection.HTTP_OK:
-                    break;
-                case HttpURLConnection.HTTP_NOT_FOUND:
-                    /* Location invalid */
-                    return null;
-                default:
-                    /* Server probably down */
-                    return null;
-            }
-        }
 
         JSONArray results = moviesJson.getJSONArray(TMDB_RESULTS);
 
@@ -62,7 +44,6 @@ public final class TMDBJsonUtils {
 
             JSONObject r = results.getJSONObject(i);
             String title = r.getString(TMDB_TITLE);
-            Log.d("movie_title_JSON", title);
             Double vote_average = r.getDouble(TMDB_VOTE_AVERAGE);
             String poster_path = r.getString(TMDB_POSTER_PATH);
             String backdrop_path = r.getString(TMDB_BACKDROP_PATH);

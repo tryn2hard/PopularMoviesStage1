@@ -1,13 +1,15 @@
 <resources>
-    <string name="app_name">Popular Movies Stage 1</string>
+    <string name="app_name">Movie Pal</string>
 
     <!-- Error message to displayed when there is a problem -->
-    <!-- retrieving data from OpenMovie -->
-    <string name="error_message">An error has occurred. Please try clicking REFRESH again. </string>
+    <string name="error_message">Oops! There was a little problem.\n
+                                Probably our bad. Give it a go later. </string>
 
     <!-- Sort by popularity menu option -->
     <string name="sort_by_popularity">Popularity</string>
 
     <!-- Sort by Highest Rated menu option -->
     <string name="sort_by_highest">Highest Rated</string>
+    <string name="movie_detail_label">Know More</string>
+    <string name="error_no_network">No internet connection</string>
 </resources>

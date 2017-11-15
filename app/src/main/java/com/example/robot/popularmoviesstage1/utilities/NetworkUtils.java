@@ -48,11 +48,11 @@ public class NetworkUtils {
 
     public static URL buildUrl(String sort_by){
         String sort_request;
-        if(sort_by.contains("popularity")){
-            sort_request = sort_by_populartiy;
-        }
-        else{
+        if(sort_by.contains("vote_count.desc")){
             sort_request = sort_by_rating;
+        }
+        else {
+            sort_request = sort_by_populartiy;
         }
         Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                 .appendQueryParameter(API_KEY, api_key)

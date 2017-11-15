@@ -40,9 +40,11 @@ public class MovieDetail extends AppCompatActivity {
         Intent intentThatStartedThisActivity = getIntent();
 
         if (intentThatStartedThisActivity != null) {
-            Log.d(TAG, "falling through the first if statement");
+
             if (intentThatStartedThisActivity.hasExtra("Test")) {
-                 Bundle data = getIntent().getExtras();
+
+                Bundle data = getIntent().getExtras();
+
                  mMovieDetailData = data.getParcelable("Test");
 
                  mMovieTitle.setText(mMovieDetailData.getmTitle());
@@ -54,8 +56,6 @@ public class MovieDetail extends AppCompatActivity {
                  mMovieSynopsis.setText(mMovieDetailData.getmPlotSynopsis());
 
                  String urlForPicasso = Movies.imageUrlBuilderMediumSize(mMovieDetailData.getmPosterUrl());
-
-                 Log.d("Image test", urlForPicasso);
 
                 Picasso.with(this).load(urlForPicasso).into(mMoviePoster);
             }

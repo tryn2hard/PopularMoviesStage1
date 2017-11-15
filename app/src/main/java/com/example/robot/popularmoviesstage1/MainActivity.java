@@ -2,11 +2,14 @@ package com.example.robot.popularmoviesstage1;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -23,7 +26,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
-    private String sort_request = "popularity.desc";
+    private String sort_request = "";
 
     private static ArrayList<Movies> mMovieData;
 
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         mMovieRecyclerView = findViewById(R.id.recyclerview_movies);
         mMovieRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         mMovieRecyclerView.setHasFixedSize(true);
@@ -54,7 +58,22 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
-        loadMovieData();
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        if(isConnected){
+            loadMovieData();
+        }
+        else{
+            mLoadingIndicator.setVisibility(View.GONE);
+            showErrorMessage();
+        }
+
+
     }
 
     private void loadMovieData(){
@@ -162,4 +181,5 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         intentToStartMovieDetailActivity.putExtra("Test", selectedMovie);
         startActivity(intentToStartMovieDetailActivity);
     }
+
 }
