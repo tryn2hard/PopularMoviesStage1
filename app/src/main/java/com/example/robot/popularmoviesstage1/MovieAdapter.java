@@ -11,21 +11,19 @@ import android.view.View.OnClickListener;
 
 import com.squareup.picasso.Picasso;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 
 /**
  * Created by Robot on 11/13/2017.
  */
 
+@SuppressWarnings("DefaultFileTemplate")
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     private ArrayList<Movies> mMovieData;
 
-    /*
+    /**
     * An on-click handler that we've defined to make it easy for an Activity to interface with
     * our RecyclerView
     */
@@ -71,6 +69,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         }
     }
+
+    /**
+     * This makes a view feeds it into the adapter.
+     * @param viewGroup
+     * @param viewType
+     * @return
+     */
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
@@ -82,6 +87,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         return new MovieAdapterViewHolder(view);
     }
 
+    /**
+     * Here we're attaching all the movie data to the different parts of the view.
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
         Movies movieForThisPosition = mMovieData.get(position);
@@ -93,6 +103,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     }
 
 
+    /**
+     * This let's adapter know how many things we're gonna try to display.
+     * @return
+     */
     @Override
     public int getItemCount() {
         if (null == mMovieData) return 0;

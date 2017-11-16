@@ -14,8 +14,12 @@ import java.util.Scanner;
  * Created by Robot on 11/14/2017.
  */
 
+
 public class NetworkUtils {
 
+    /**
+     * Key values for the JSON Query
+     */
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
     private static final String STATIC_TMDB_URL =
@@ -27,10 +31,6 @@ public class NetworkUtils {
 
     private static final String language = "en-US";
 
-    private static final String sort_by_populartiy = "popularity.desc";
-
-    private static final String sort_by_rating = "vote_count.desc";
-
     private static final String include_adult = "false";
 
     private static final String include_video = "false";
@@ -38,26 +38,27 @@ public class NetworkUtils {
     private static final String page = "1";
 
 
+    /**
+     * Search parameters
+     */
+    private final static String API_KEY = "api_key";
+    private final static String LANGUAGE_PARAM = "language";
+    private final static String SORT_BY_PARAM = "sort_by";
+    private final static String INCLUDE_ADULT_PARAM = "include_adult";
+    private final static String INCLUDE_VIDEO_PARAM = "include_video";
+    private final static String PAGE_PARAM = "page";
 
-    final static String API_KEY = "api_key";
-    final static String LANGUAGE_PARAM = "language";
-    final static String SORT_BY_PARAM = "sort_by";
-    final static String INCLUDE_ADULT_PARAM = "include_adult";
-    final static String INCLUDE_VIDEO_PARAM = "include_video";
-    final static String PAGE_PARAM = "page";
-
+    /**
+     * Method builds the proper url to request TMDB for movie data
+     * @param sort_by
+     * @return
+     */
     public static URL buildUrl(String sort_by){
-        String sort_request;
-        if(sort_by.contains("vote_count.desc")){
-            sort_request = sort_by_rating;
-        }
-        else {
-            sort_request = sort_by_populartiy;
-        }
+
         Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
                 .appendQueryParameter(API_KEY, api_key)
                 .appendQueryParameter(LANGUAGE_PARAM, language)
-                .appendQueryParameter(SORT_BY_PARAM, sort_request)
+                .appendQueryParameter(SORT_BY_PARAM, sort_by)
                 .appendQueryParameter(INCLUDE_ADULT_PARAM, include_adult)
                 .appendQueryParameter(INCLUDE_VIDEO_PARAM, include_video)
                 .appendQueryParameter(PAGE_PARAM, page)
@@ -74,6 +75,15 @@ public class NetworkUtils {
 
         return url;
     }
+
+    /**
+     * Method to query TMDB and collect the JSON data.
+     * Wish I knew a little more about scanner, but hey
+     * maybe Udacity will cover it next time.
+     * @param url
+     * @return
+     * @throws IOException
+     */
 
     public static String getResponseFromHttpUrl(URL url) throws IOException{
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();

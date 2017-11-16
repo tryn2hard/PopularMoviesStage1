@@ -7,12 +7,12 @@ import android.os.Parcelable;
  * Created by Robot on 11/14/2017.
  */
 
+
 public class Movies implements Parcelable{
 
+    // Strings for Picasso
     private static final String IMAGE_BASE_URL = "https://image.tmdb.org/t/p/";
-
     private static final String IMAGE_SIZE_DETAIL = "w342";
-
     private static final String IMAGE_SIZE_ADAPTER = "w780";
 
     public static final Parcelable.Creator<Movies> CREATOR = new Parcelable.Creator<Movies>(){
@@ -48,41 +48,31 @@ public class Movies implements Parcelable{
         return mTitle;
     }
 
-    public void setmTitle(String mTitle) {
-        this.mTitle = mTitle;
-    }
+
 
     public String getmReleaseDate() {
         return mReleaseDate;
     }
 
-    public void setmReleaseDate(String mReleaseDate) {
-        this.mReleaseDate = mReleaseDate;
-    }
+
 
     public String getmPosterUrl() {
         return mPosterUrl;
     }
 
-    public void setmPosterUrl(String mPosterUrl) {
-        this.mPosterUrl = mPosterUrl;
-    }
+
 
     public String getmPlotSynopsis() {
         return mPlotSynopsis;
     }
 
-    public void setmPlotSynopsis(String mPlotSynopsis) {
-        this.mPlotSynopsis = mPlotSynopsis;
-    }
+
 
     public double getmVoteAverage() {
         return mVoteAverage;
     }
 
-    public void setmVoteAverage(double mVoteAverage) {
-        this.mVoteAverage = mVoteAverage;
-    }
+
 
     public Movies(Parcel in) {
         mTitle = in.readString();
@@ -107,6 +97,13 @@ public class Movies implements Parcelable{
         dest.writeDouble(mVoteAverage);
     }
 
+    /**
+     * Method builds an image url for picasso to use.
+     * This one returns a medium sized photo used in the
+     * MovieDetail layout
+     * @param imagePath
+     * @return
+     */
     public static String imageUrlBuilderMediumSize (String imagePath){
         String finishedImagePath =  IMAGE_BASE_URL +
                 IMAGE_SIZE_DETAIL +
@@ -115,6 +112,13 @@ public class Movies implements Parcelable{
         return finishedImagePath;
     }
 
+    /**
+     * Method builds an image url for picasso.
+     * This one returns a large size photo used in the
+     * Main layout
+     * @param imagePath
+     * @return
+     */
     public static String imageUrlBuilderLargeSize (String imagePath){
         String finishedImagePath =  IMAGE_BASE_URL +
                 IMAGE_SIZE_ADAPTER +

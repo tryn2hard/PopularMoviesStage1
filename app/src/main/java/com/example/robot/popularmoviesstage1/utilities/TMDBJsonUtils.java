@@ -1,20 +1,21 @@
 package com.example.robot.popularmoviesstage1.utilities;
 
-import android.util.Log;
-
 import com.example.robot.popularmoviesstage1.Movies;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 
 /**
  * Created by Robot on 11/14/2017.
  */
 
+/**
+ * All the data has to be extracted out, and by golly it was not fun.
+ * Good thing I did it a few times beforehand.
+ */
 public final class TMDBJsonUtils {
 
     public static ArrayList<Movies> getMovieFromJson(String movieJsonStr)
@@ -27,8 +28,6 @@ public final class TMDBJsonUtils {
         final String TMDB_VOTE_AVERAGE = "vote_average";
 
         final String TMDB_POSTER_PATH = "poster_path";
-
-        final String TMDB_BACKDROP_PATH = "backdrop_path";
 
         final String TMDB_OVERVIEW = "overview";
 
@@ -46,7 +45,6 @@ public final class TMDBJsonUtils {
             String title = r.getString(TMDB_TITLE);
             Double vote_average = r.getDouble(TMDB_VOTE_AVERAGE);
             String poster_path = r.getString(TMDB_POSTER_PATH);
-            String backdrop_path = r.getString(TMDB_BACKDROP_PATH);
             String overview = r.getString(TMDB_OVERVIEW);
             String release_date = r.getString(TMDB_RELEASE_DATE);
 

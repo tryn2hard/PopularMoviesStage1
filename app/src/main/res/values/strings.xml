@@ -10,6 +10,6 @@
 
     <!-- Sort by Highest Rated menu option -->
     <string name="sort_by_highest">Highest Rated</string>
-    <string name="movie_detail_label">Know More</string>
-    <string name="error_no_network">No internet connection</string>
+
+
 </resources>
