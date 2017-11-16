@@ -8,9 +8,9 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-public class MovieDetail extends AppCompatActivity {
+public class MovieDetailActivity extends AppCompatActivity {
 
-    private static final String TAG = MovieDetail.class.getSimpleName();
+    private static final String TAG = MovieDetailActivity.class.getSimpleName();
 
 
     @Override

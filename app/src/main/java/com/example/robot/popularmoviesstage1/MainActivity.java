@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -236,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     public void onClick(Movies selectedMovie) {
         Context context = this;
-        Class destinationClass = MovieDetail.class;
+        Class destinationClass = MovieDetailActivity.class;
         Intent intentToStartMovieDetailActivity = new Intent(context, destinationClass);
         intentToStartMovieDetailActivity.putExtra(INTENT_EXTRA_KEY, selectedMovie);
         startActivity(intentToStartMovieDetailActivity);

@@ -100,7 +100,7 @@ public class Movies implements Parcelable{
     /**
      * Method builds an image url for picasso to use.
      * This one returns a medium sized photo used in the
-     * MovieDetail layout
+     * MovieDetailActivity layout
      * @param imagePath
      * @return
      */
