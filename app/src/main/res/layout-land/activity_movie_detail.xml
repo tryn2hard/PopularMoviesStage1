@@ -4,121 +4,132 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:weightSum="1">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/tv_movie_title"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.2"
-        android:paddingLeft="16dp"
-        android:textSize="34sp"
-        android:gravity="center_vertical"
-        tools:text="Title"
-        android:textStyle="bold"
+        android:layout_height="54dp"
         android:background="@color/colorAccent"
+        android:gravity="center_vertical"
+        android:paddingLeft="16dp"
+        android:shadowColor="@color/colorPrimaryDark"
         android:textColor="@color/text"
-        android:shadowColor="@color/colorPrimaryDark"/>
+        android:textSize="34sp"
+        android:textStyle="bold"
+        tools:text="Title" />
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.4"
-        android:orientation="horizontal"
-        android:paddingTop="8dp">
-
-        <ImageView
-            android:id="@+id/iv_detail_movie_poster"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            android:paddingLeft="16dp"
-            app:srcCompat="@drawable/thor" />
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingLeft="12dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="horizontal"
                 android:paddingTop="8dp">
 
-                <TextView
+                <ImageView
+                    android:id="@+id/iv_detail_movie_poster"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:text="Release Date"
-                    android:textSize="24sp" />
+                    android:adjustViewBounds="true"
+                    android:paddingLeft="16dp" />
 
-                <TextView
-                    android:id="@+id/tv_detail_release_date"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="8dp"
-                    android:paddingLeft="8dp"
-                    android:paddingTop="4dp"
-                    android:textSize="24sp"
-                    tools:text="Release Date" />
+                    android:orientation="vertical"
+                    android:paddingLeft="12dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="8dp"
+                            android:text="Release Date"
+                            android:textSize="24sp" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_release_date"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="8dp"
+                            android:paddingLeft="8dp"
+                            android:paddingTop="4dp"
+                            android:textSize="24sp"
+                            tools:text="Release Date" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingTop="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:padding="8dp"
+                            android:text="Rating"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/tv_detail_rating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="8dp"
+                            android:paddingTop="4dp"
+                            android:textSize="16sp"
+                            tools:text="Rating" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
             </LinearLayout>
 
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingTop="8dp">
+                android:layout_gravity="start"
+                android:layout_weight="2"
+                android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tv_detail_synopsis_header"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:text="Rating"
-                    android:textSize="16sp" />
+                    android:paddingLeft="16dp"
+                    android:text="Synopsis"
+                    android:textSize="34sp" />
 
                 <TextView
-                    android:id="@+id/tv_detail_rating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="8dp"
-                    android:paddingTop="4dp"
+                    android:id="@+id/tv_detail_synopsis"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="8dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:textSize="16sp"
-                    tools:text="Rating" />
+                    tools:text="TextView" />
+
             </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.4"
-        android:orientation="vertical"
-        android:layout_gravity="start">
-
-        <TextView
-            android:id="@+id/tv_detail_synopsis_header"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:text="Synopsis"
-            android:textSize="34sp"/>
-
-        <TextView
-            android:id="@+id/tv_detail_synopsis"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingLeft="16dp"
-            android:paddingTop="8dp"
-            android:paddingRight="8dp"
-            tools:text="TextView"
-            android:textSize="16sp"/>
-
-    </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>
