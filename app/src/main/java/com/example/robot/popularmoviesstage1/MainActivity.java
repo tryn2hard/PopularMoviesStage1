@@ -3,6 +3,7 @@ package com.example.robot.popularmoviesstage1;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -63,7 +64,15 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         // Linking the recyclerView to the view and layout manager
         mMovieRecyclerView = findViewById(R.id.recyclerview_movies);
-        mMovieRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+
+
+        if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+            mMovieRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        }
+        else{
+            mMovieRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+        }
+
         mMovieRecyclerView.setHasFixedSize(true);
 
         // Giving the adapter a new click handler
