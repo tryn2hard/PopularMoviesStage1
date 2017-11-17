@@ -3,6 +3,8 @@ package com.example.robot.popularmoviesstage1.utilities;
 import android.net.Uri;
 import android.util.Log;
 
+import com.example.robot.popularmoviesstage1.BuildConfig;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -26,8 +28,6 @@ public class NetworkUtils {
             "https://api.themoviedb.org/3/movie/";
 
     private static final String MOVIE_BASE_URL = STATIC_TMDB_URL;
-
-    private static final String api_key = "";
 
     private static final String language = "en-US";
 
@@ -57,7 +57,7 @@ public class NetworkUtils {
         String baseUrlWithSortPref = MOVIE_BASE_URL + sort_by;
 
         Uri builtUri = Uri.parse(baseUrlWithSortPref).buildUpon()
-                .appendQueryParameter(API_KEY, api_key)
+                .appendQueryParameter(API_KEY, BuildConfig.THE_MOVIE_DB_API_TOKEN)
                 .appendQueryParameter(INCLUDE_ADULT_PARAM, include_adult)
                 .appendQueryParameter(INCLUDE_VIDEO_PARAM, include_video)
                 .appendQueryParameter(LANGUAGE_PARAM, language)
