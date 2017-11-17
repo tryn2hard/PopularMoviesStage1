@@ -43,9 +43,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final String SORT_PREF_KEY = "sort";
 
-    public static final String SORT_PREF_VOTE = "vote_count.desc";
+    public static final String SORT_PREF_VOTE = "top_rated?";
 
-    public static final String SORT_PREF_POP = "popularity.desc";
+    public static final String SORT_PREF_POP = "popular?";
 
     public static final String INTENT_EXTRA_KEY = "data";
 

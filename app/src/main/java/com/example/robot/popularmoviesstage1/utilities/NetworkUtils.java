@@ -23,7 +23,7 @@ public class NetworkUtils {
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
     private static final String STATIC_TMDB_URL =
-            "https://api.themoviedb.org/3/discover/movie?";
+            "https://api.themoviedb.org/3/movie/";
 
     private static final String MOVIE_BASE_URL = STATIC_TMDB_URL;
 
@@ -43,7 +43,6 @@ public class NetworkUtils {
      */
     private final static String API_KEY = "api_key";
     private final static String LANGUAGE_PARAM = "language";
-    private final static String SORT_BY_PARAM = "sort_by";
     private final static String INCLUDE_ADULT_PARAM = "include_adult";
     private final static String INCLUDE_VIDEO_PARAM = "include_video";
     private final static String PAGE_PARAM = "page";
@@ -55,12 +54,13 @@ public class NetworkUtils {
      */
     public static URL buildUrl(String sort_by){
 
-        Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+        String baseUrlWithSortPref = MOVIE_BASE_URL + sort_by;
+
+        Uri builtUri = Uri.parse(baseUrlWithSortPref).buildUpon()
                 .appendQueryParameter(API_KEY, api_key)
-                .appendQueryParameter(LANGUAGE_PARAM, language)
-                .appendQueryParameter(SORT_BY_PARAM, sort_by)
                 .appendQueryParameter(INCLUDE_ADULT_PARAM, include_adult)
                 .appendQueryParameter(INCLUDE_VIDEO_PARAM, include_video)
+                .appendQueryParameter(LANGUAGE_PARAM, language)
                 .appendQueryParameter(PAGE_PARAM, page)
                 .build();
 
