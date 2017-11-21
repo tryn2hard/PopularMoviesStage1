@@ -12,8 +12,7 @@ public class Movies implements Parcelable{
 
     // Strings for Picasso
     private static final String IMAGE_BASE_URL = "https://image.tmdb.org/t/p/";
-    private static final String IMAGE_SIZE_DETAIL = "w342";
-    private static final String IMAGE_SIZE_ADAPTER = "w780";
+    private static final String IMAGE_SIZE= "w185";
 
     public static final Parcelable.Creator<Movies> CREATOR = new Parcelable.Creator<Movies>(){
         public Movies createFromParcel(Parcel in) {
@@ -97,31 +96,17 @@ public class Movies implements Parcelable{
         dest.writeDouble(mVoteAverage);
     }
 
-    /**
-     * Method builds an image url for picasso to use.
-     * This one returns a medium sized photo used in the
-     * MovieDetailActivity layout
-     * @param imagePath
-     * @return
-     */
-    public static String imageUrlBuilderMediumSize (String imagePath){
-        String finishedImagePath =  IMAGE_BASE_URL +
-                IMAGE_SIZE_DETAIL +
-                imagePath;
-
-        return finishedImagePath;
-    }
 
     /**
      * Method builds an image url for picasso.
-     * This one returns a large size photo used in the
+     * This one returns a photo used in the
      * Main layout
      * @param imagePath
      * @return
      */
-    public static String imageUrlBuilderLargeSize (String imagePath){
+    public static String imageUrlBuilder (String imagePath){
         String finishedImagePath =  IMAGE_BASE_URL +
-                IMAGE_SIZE_ADAPTER +
+                IMAGE_SIZE +
                 imagePath;
 
         return finishedImagePath;

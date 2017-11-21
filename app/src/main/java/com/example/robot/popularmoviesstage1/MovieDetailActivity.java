@@ -55,7 +55,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
                 mMovieSynopsis.setText(mMovieDetailData.getmPlotSynopsis());
 
-                String urlForPicasso = Movies.imageUrlBuilderMediumSize(mMovieDetailData.getmPosterUrl());
+                String urlForPicasso = Movies.imageUrlBuilder(mMovieDetailData.getmPosterUrl());
 
                 Picasso.with(this).load(urlForPicasso).into(mMoviePoster);
             }
