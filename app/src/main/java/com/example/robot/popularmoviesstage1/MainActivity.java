@@ -66,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         mMovieRecyclerView = findViewById(R.id.recyclerview_movies);
 
 
+        // Checks orientation and displays either two or three posters in port and land respectively
         if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
             mMovieRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         }
