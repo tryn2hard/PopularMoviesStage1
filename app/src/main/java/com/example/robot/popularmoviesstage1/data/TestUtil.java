@@ -44,6 +44,8 @@ public class TestUtil {
                 "proves risky as all three find themselves running from giant rhinoceroses, evil " +
                 "monkeys and other terrifying creatures.");
 
+        list.add(cv);
+
         //insert all guests in one transaction
         try
         {

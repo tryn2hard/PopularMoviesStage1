@@ -42,7 +42,7 @@ public class MovieContract {
             favorites(plan on using this to create a favorite_movie activity
          */
 
-        public static final String COLUMN_MOVIE_ID = "moive_id";
+        public static final String COLUMN_MOVIE_ID = "movie_id";
 
         public static final String COLUMN_TITLE = "title";
 

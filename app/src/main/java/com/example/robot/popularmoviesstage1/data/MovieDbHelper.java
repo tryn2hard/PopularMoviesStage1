@@ -25,7 +25,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
                 "CREATE TABLE " + MovieContract.MovieEntry.TABLE_NAME + " (" +
 
-                        MovieContract.MovieEntry._ID        + " INTEGER PRIMARY KEY AUTO" +
+                        MovieContract.MovieEntry._ID        + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
 
                         MovieContract.MovieEntry.COLUMN_MOVIE_ID + " INTEGER NOT NULL, " +
 
@@ -33,7 +33,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
                         MovieContract.MovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, " +
 
-                        MovieContract.MovieEntry.COLUMN_MOVIE_POSTER + " TEXT NOT NULL " +
+                        MovieContract.MovieEntry.COLUMN_MOVIE_POSTER + " TEXT NOT NULL, " +
 
                         MovieContract.MovieEntry.COLUMN_VOTE_AVG + " INTEGER NOT NULL, " +
 

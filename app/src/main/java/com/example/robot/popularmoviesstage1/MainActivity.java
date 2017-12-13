@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -19,6 +21,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
+import com.example.robot.popularmoviesstage1.data.MovieContract;
+import com.example.robot.popularmoviesstage1.data.MovieDbHelper;
+import com.example.robot.popularmoviesstage1.data.TestUtil;
 import com.example.robot.popularmoviesstage1.utilities.NetworkUtils;
 import com.example.robot.popularmoviesstage1.utilities.TMDBJsonUtils;
 
@@ -29,8 +34,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     // Member Variable declarations
     private String sort_request;
-
-    private static ArrayList<Movies> mMovieData;
 
     private RecyclerView mMovieRecyclerView;
 
@@ -54,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private SQLiteDatabase mDb;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,18 +81,31 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         mMovieRecyclerView.setHasFixedSize(true);
 
+        // Creating a new instance of the MovieDbHelper
+        MovieDbHelper dbHelper = new MovieDbHelper(this);
+
+        // Getting a writable database
+        mDb = dbHelper.getWritableDatabase();
+
+        // Inserting fake data to test the database
+        TestUtil.insertFakeData(mDb);
+
+        // Getting all the data stored in the database
+        Cursor cursor = getAllMovies();
+
         // Giving the adapter a new click handler
-        mMovieAdapter = new MovieAdapter(this);
+        mMovieAdapter = new MovieAdapter(this, this, cursor);
 
         // Attaching the adapter to the recyclerView
         mMovieRecyclerView.setAdapter(mMovieAdapter);
 
+
         // This little snippet checks to see if we have any saved data from a
         // previous session and loads it into the adapter.
-        if(savedInstanceState != null){
-            mMovieData = savedInstanceState.getParcelableArrayList(SAVED_INSTANCE_STATE_KEY);
-            mMovieAdapter.setMovieData(mMovieData);
-        }
+//        if(savedInstanceState != null){
+//            mMovieData = savedInstanceState.getParcelableArrayList(SAVED_INSTANCE_STATE_KEY);
+//            mMovieAdapter.setMovieData(mMovieData);
+//        }
 
         // More linking of views to their variables
         mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
@@ -95,30 +113,30 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         // Here we have our network connectivity check. If the connectivity is no good
         // then we display an error message.
-        ConnectivityManager cm =
-                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        @SuppressWarnings("ConstantConditions") NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-
-        if(isConnected ){
-            loadMovieData();
-        }
-        else{
-            mLoadingIndicator.setVisibility(View.GONE);
-            showErrorMessage();
-        }
+//        ConnectivityManager cm =
+//                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//        @SuppressWarnings("ConstantConditions") NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+//        boolean isConnected = activeNetwork != null &&
+//                activeNetwork.isConnectedOrConnecting();
+//
+//        if(isConnected ){
+//            loadMovieData();
+//        }
+//        else{
+//            mLoadingIndicator.setVisibility(View.GONE);
+//            showErrorMessage();
+//        }
 
 
     }
 
     // First turns on the right views to display the data, and then calls AsyncTask to do it's thing
-    private void loadMovieData(){
-
-        showMovieDataView();
-        new FetchMovieTask().execute();
-    }
+//    private void loadMovieData(){
+//
+//        showMovieDataView();
+//        new FetchMovieTask().execute();
+//    }
 
     /**
      * This method will make the View for the movie data visible and
@@ -152,42 +170,42 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
      * This block of code takes care of all the network stuff that needs to be done.
      * Also, passes the data from the network to the adapter for loading.
      */
-    public class FetchMovieTask extends AsyncTask<Void, Void, ArrayList<Movies>>{
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoadingIndicator.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected ArrayList<Movies> doInBackground(Void...voids) {
-
-            URL movieRequestUrl = NetworkUtils.buildUrl(sort_request);
-
-            try{
-                String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
-
-                mMovieData = TMDBJsonUtils.getMovieFromJson(jsonMovieResponse);
-
-                return mMovieData;
-            } catch (Exception e){
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Movies> movies) {
-            mLoadingIndicator.setVisibility(View.INVISIBLE);
-            if(movies != null){
-                showMovieDataView();
-                mMovieAdapter.setMovieData(mMovieData);
-            } else{
-                showErrorMessage();
-            }
-        }
-    }
+//    public class FetchMovieTask extends AsyncTask<Void, Void, ArrayList<Movies>>{
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            mLoadingIndicator.setVisibility(View.VISIBLE);
+//        }
+//
+//        @Override
+//        protected ArrayList<Movies> doInBackground(Void...voids) {
+//
+//            URL movieRequestUrl = NetworkUtils.buildUrl(sort_request);
+//
+//            try{
+//                String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
+//
+//                mMovieData = TMDBJsonUtils.getMovieFromJson(jsonMovieResponse);
+//
+//                return mMovieData;
+//            } catch (Exception e){
+//                e.printStackTrace();
+//                return null;
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(ArrayList<Movies> movies) {
+//            mLoadingIndicator.setVisibility(View.INVISIBLE);
+//            if(movies != null){
+//                showMovieDataView();
+//                mMovieAdapter.setMovieData(mMovieData);
+//            } else{
+//                showErrorMessage();
+//            }
+//        }
+//    }
 
     /**
      * Here's our menu creator.
@@ -223,33 +241,17 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
            sort_select = SORT_PREF_VOTE;
            storePref(sort_select);
            sort_request = SORT_PREF_VOTE;
-           mMovieAdapter.setMovieData(null);
-           loadMovieData();
+
         }
         if (sortSelect == R.id.sort_by_popularity){
             sort_select = SORT_PREF_POP;
             storePref(sort_select);
             sort_request = SORT_PREF_POP;
-            mMovieAdapter.setMovieData(null);
-            loadMovieData();
+
         }
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Here we handle the click on a movie poster. It starts another activity.
-     * Also, we make sure to put in a little extra for our next activity to work
-     * with. It's basically the movie object, but as a 'parcelable.
-     * @param selectedMovie
-     */
-    @Override
-    public void onClick(Movies selectedMovie) {
-        Context context = this;
-        Class destinationClass = MovieDetailActivity.class;
-        Intent intentToStartMovieDetailActivity = new Intent(context, destinationClass);
-        intentToStartMovieDetailActivity.putExtra(INTENT_EXTRA_KEY, selectedMovie);
-        startActivity(intentToStartMovieDetailActivity);
-    }
 
     /**
      * When a menu option is clicked we walk over here and save the choice into shared
@@ -286,6 +288,27 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(SAVED_INSTANCE_STATE_KEY, mMovieData);
+        //outState.putParcelableArrayList(SAVED_INSTANCE_STATE_KEY, mCursor);
+    }
+
+    private Cursor getAllMovies(){
+        return mDb.query(
+                MovieContract.MovieEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                MovieContract.MovieEntry._ID
+        );
+    }
+
+    @Override
+    public void onClick() {
+//        Context context = this;
+//        Class destinationClass = MovieDetailActivity.class;
+//        Intent intentToStartMovieDetailActivity = new Intent(context, destinationClass);
+//        intentToStartMovieDetailActivity.putExtra(INTENT_EXTRA_KEY, selectedMovie);
+//        startActivity(intentToStartMovieDetailActivity);
     }
 }

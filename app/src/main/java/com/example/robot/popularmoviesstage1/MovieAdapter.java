@@ -2,13 +2,16 @@
 package com.example.robot.popularmoviesstage1;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.view.View.OnClickListener;
+import android.widget.TextView;
 
+import com.example.robot.popularmoviesstage1.data.MovieContract;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -23,18 +26,25 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     private ArrayList<Movies> mMovieData;
 
+    private Context mContext;
+
+    private Cursor mCursor;
+
+
     /**
-    * An on-click handler that we've defined to make it easy for an Activity to interface with
-    * our RecyclerView
-    */
+     * An on-click handler that we've defined to make it easy for an Activity to interface with
+     * our RecyclerView
+     */
     private final MovieAdapterOnClickHandler mClickHandler;
 
     /**
+     *
      * The interface that receives onClick messages.
      */
     public interface MovieAdapterOnClickHandler {
-        void onClick(Movies selectedMovie);
+        void onClick();
     }
+
 
     /**
      * Creates a MovieAdapter.
@@ -42,8 +52,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      * @param clickHandler The on-click handler for this adapter. This single handler is called
      *                     when an item is clicked.
      */
-    public MovieAdapter(MovieAdapterOnClickHandler clickHandler) {
+    public MovieAdapter(MovieAdapterOnClickHandler clickHandler, Context context, Cursor cursor) {
         mClickHandler = clickHandler;
+        this.mContext = context;
+        mCursor = cursor;
     }
 
     public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
@@ -63,9 +75,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
          */
         @Override
         public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
-            Movies movieSelected = mMovieData.get(adapterPosition);
-            mClickHandler.onClick(movieSelected);
+//            int adapterPosition = getAdapterPosition();
+//            Movies movieSelected = mMovieData.get(adapterPosition);
+//            mClickHandler.onClick(movieSelected);
 
         }
     }
@@ -78,9 +90,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      */
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        Context context = viewGroup.getContext();
+
         int layoutIdForListItem = R.layout.movie_list_item;
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
         boolean shouldAttachToParentImmediately = false;
 
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
@@ -94,9 +106,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      */
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
-        Movies movieForThisPosition = mMovieData.get(position);
-        String posterUrl = movieForThisPosition.getmPosterUrl();
-        String finishedUrl = Movies.imageUrlBuilder(posterUrl);
+        if(!mCursor.moveToPosition(position)){
+            return;
+        }
+        mCursor.moveToPosition(position);
+
+        String moviePosterUrl = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER));
+        String finishedUrl = Movies.imageUrlBuilder(moviePosterUrl);
         Context context = holder.mMovieImageView.getContext();
         Picasso.with(context).load(finishedUrl).into(holder.mMovieImageView);
 
@@ -109,20 +125,25 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      */
     @Override
     public int getItemCount() {
-        if (null == mMovieData) return 0;
-        return mMovieData.size();
+        if(mCursor == null) return 0;
+        return mCursor.getCount();
     }
 
     /**
-     * This method is used to set the movie data on a MovieAdapter if we've already
-     * created one. This is handy when we get new data from the web but don't want to create a
-     * new ForecastAdapter to display it.
-     *
-     * @param movieData The new weather data to be displayed.
+     * Inner class to hold the views needed to display a single item in the recycler-view
      */
-    public void setMovieData(ArrayList<Movies> movieData) {
-        mMovieData = movieData;
-        notifyDataSetChanged();
-    }
+    class MovieViewHolder extends RecyclerView.ViewHolder {
 
+        // Will display the poster
+        final ImageView posterImageView;
+
+
+        public MovieViewHolder(View itemView) {
+            super(itemView);
+            posterImageView = itemView.findViewById(R.id.iv_movie_poster);
+
+        }
+
+
+    }
 }
