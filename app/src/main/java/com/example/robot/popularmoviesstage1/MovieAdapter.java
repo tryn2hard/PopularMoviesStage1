@@ -51,36 +51,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      * @param clickHandler The on-click handler for this adapter. This single handler is called
      *                     when an item is clicked.
      */
-    public MovieAdapter(MovieAdapterOnClickHandler clickHandler, Context context, Cursor cursor) {
+    public MovieAdapter(MovieAdapterOnClickHandler clickHandler, Context context) {
         mClickHandler = clickHandler;
         this.mContext = context;
-        mCursor = cursor;
+
     }
 
-    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
 
-        public final ImageView mMovieImageView;
-
-        public MovieAdapterViewHolder(View view) {
-            super(view);
-            mMovieImageView = view.findViewById(R.id.iv_movie_poster);
-            view.setOnClickListener(this);
-        }
-
-        /**
-         * This gets called by the child views during a click.
-         *
-         * @param v The View that was clicked
-         */
-        @Override
-        public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
-            mCursor.moveToPosition(adapterPosition);
-            int id = mCursor.getColumnIndex(MovieContract.MovieEntry._ID);
-            mClickHandler.onClick(id);
-
-        }
-    }
 
     /**
      * This makes a view feeds it into the adapter.
@@ -90,11 +67,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      */
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-
+        Context context = viewGroup.getContext();
         int layoutIdForListItem = R.layout.movie_list_item;
-        LayoutInflater inflater = LayoutInflater.from(mContext);
+        LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
-
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
         return new MovieAdapterViewHolder(view);
     }
@@ -127,6 +103,36 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     public int getItemCount() {
         if(mCursor == null) return 0;
         return mCursor.getCount();
+    }
+
+    public void swapCursor(Cursor cursor){
+        mCursor = cursor;
+        notifyDataSetChanged();
+    }
+
+    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
+
+        public final ImageView mMovieImageView;
+
+        public MovieAdapterViewHolder(View view) {
+            super(view);
+            mMovieImageView = view.findViewById(R.id.iv_movie_poster);
+            view.setOnClickListener(this);
+        }
+
+        /**
+         * This gets called by the child views during a click.
+         *
+         * @param v The View that was clicked
+         */
+        @Override
+        public void onClick(View v) {
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            int id = mCursor.getColumnIndex(MovieContract.MovieEntry._ID);
+            mClickHandler.onClick(id);
+
+        }
     }
 
 }

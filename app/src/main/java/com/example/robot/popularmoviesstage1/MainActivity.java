@@ -6,7 +6,11 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,18 +26,12 @@ import com.example.robot.popularmoviesstage1.data.MovieContract;
 import com.example.robot.popularmoviesstage1.data.MovieDbHelper;
 import com.example.robot.popularmoviesstage1.utilities.TestUtil;
 
-public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
+public class MainActivity extends AppCompatActivity implements
+        MovieAdapter.MovieAdapterOnClickHandler,
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     // Member Variable declarations
     private String sort_request;
-
-    private RecyclerView mMovieRecyclerView;
-
-    private TextView mErrorMessageDisplay;
-
-    private ProgressBar mLoadingIndicator;
-
-    private MovieAdapter mMovieAdapter;
 
     private static final String USER_PREF = "pref";
 
@@ -51,6 +49,20 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     private SQLiteDatabase mDb;
 
+    public static final String[] MAIN_MOVIE_PROJECTION = {MovieContract.MovieEntry.COLUMN_MOVIE_POSTER};
+
+    public static final int INDEX_MOVIE_POSTER = 0;
+
+    private static final int ID_MOVIE_LOADER = 44;
+
+    private RecyclerView mMovieRecyclerView;
+
+    private ProgressBar mLoadingIndicator;
+
+    private MovieAdapter mMovieAdapter;
+
+    private int mPosition = RecyclerView.NO_POSITION;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,10 +76,9 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
 
         // Checks orientation and displays either two or three posters in port and land respectively
-        if(this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT){
+        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             mMovieRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
-        }
-        else{
+        } else {
             mMovieRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         }
 
@@ -86,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         Cursor cursor = getAllMovies();
 
         // Giving the adapter a new click handler
-        mMovieAdapter = new MovieAdapter(this, this, cursor);
+        mMovieAdapter = new MovieAdapter(this, this);
 
         // Attaching the adapter to the recyclerView
         mMovieRecyclerView.setAdapter(mMovieAdapter);
@@ -100,8 +111,12 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 //        }
 
         // More linking of views to their variables
-        mErrorMessageDisplay = findViewById(R.id.tv_error_message_display);
+
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
+
+        showLoading();
+
+        getSupportLoaderManager().initLoader(ID_MOVIE_LOADER, null, this);
 
         // Here we have our network connectivity check. If the connectivity is no good
         // then we display an error message.
@@ -123,12 +138,6 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     }
 
-    // First turns on the right views to display the data, and then calls AsyncTask to do it's thing
-//    private void loadMovieData(){
-//
-//        showMovieDataView();
-//        new FetchMovieTask().execute();
-//    }
 
     /**
      * This method will make the View for the movie data visible and
@@ -139,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
      */
     private void showMovieDataView() {
         /* First, make sure the error is invisible */
-        mErrorMessageDisplay.setVisibility(View.INVISIBLE);
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
         /* Then, make sure the movie data is visible */
         mMovieRecyclerView.setVisibility(View.VISIBLE);
     }
@@ -151,57 +160,76 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
      * Since it is okay to redundantly set the visibility of a View, we don't
      * need to check whether each view is currently visible or invisible.
      */
-    private void showErrorMessage() {
+    private void showLoading() {
         /* First, hide the currently visible data */
         mMovieRecyclerView.setVisibility(View.INVISIBLE);
         /* Then, show the error */
-        mErrorMessageDisplay.setVisibility(View.VISIBLE);
+        mLoadingIndicator.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * This block of code takes care of all the network stuff that needs to be done.
-     * Also, passes the data from the network to the adapter for loading.
-     */
-//    public class FetchMovieTask extends AsyncTask<Void, Void, ArrayList<Movies>>{
-//
-//        @Override
-//        protected void onPreExecute() {
-//            super.onPreExecute();
-//            mLoadingIndicator.setVisibility(View.VISIBLE);
-//        }
-//
-//        @Override
-//        protected ArrayList<Movies> doInBackground(Void...voids) {
-//
-//            URL movieRequestUrl = NetworkUtils.buildUrl(sort_request);
-//
-//            try{
-//                String jsonMovieResponse = NetworkUtils.getResponseFromHttpUrl(movieRequestUrl);
-//
-//                mMovieData = TMDBJsonUtils.getMovieFromJson(jsonMovieResponse);
-//
-//                return mMovieData;
-//            } catch (Exception e){
-//                e.printStackTrace();
-//                return null;
-//            }
-//        }
-//
-//        @Override
-//        protected void onPostExecute(ArrayList<Movies> movies) {
-//            mLoadingIndicator.setVisibility(View.INVISIBLE);
-//            if(movies != null){
-//                showMovieDataView();
-//                mMovieAdapter.setMovieData(mMovieData);
-//            } else{
-//                showErrorMessage();
-//            }
-//        }
-//    }
+    private Cursor getAllMovies() {
+        return mDb.query(
+                MovieContract.MovieEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                MovieContract.MovieEntry._ID
+        );
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle loaderArgs) {
+        switch (id) {
+            case ID_MOVIE_LOADER:
+                Uri movieQueryUri = MovieContract.MovieEntry.CONTENT_URI;
+
+                return new CursorLoader(this,
+                        movieQueryUri,
+                        MAIN_MOVIE_PROJECTION,
+                        null,
+                        null,
+                        null);
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + id);
+        }
+
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+        mLoadingIndicator.setVisibility(View.INVISIBLE);
+        mMovieAdapter.swapCursor(data);
+        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
+
+        mMovieRecyclerView.smoothScrollToPosition(mPosition);
+
+        if (data.getCount() != 0) {
+            showMovieDataView();
+        }
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mMovieAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onClick(int id) {
+//        Context context = this;
+//        //Class destinationClass = MovieDetailActivity.class;
+//        Intent intentToStartMovieDetailActivity = new Intent(context, destinationClass);
+//        intentToStartMovieDetailActivity.putExtra(INTENT_EXTRA_KEY, id);
+//        startActivity(intentToStartMovieDetailActivity);
+    }
 
     /**
      * Here's our menu creator.
      * This let's us see our sort options
+     *
      * @param menu
      * @return
      */
@@ -219,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
      * When an option is picked, we save the selection into shared preferences,
      * clear the adapter data, and load up new data based on the preferred
      * sort parameter.
+     *
      * @param item
      * @return
      */
@@ -229,13 +258,13 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
         String sort_select;
 
-        if (sortSelect == R.id.sort_by_highest){
-           sort_select = SORT_PREF_VOTE;
-           storePref(sort_select);
-           sort_request = SORT_PREF_VOTE;
+        if (sortSelect == R.id.sort_by_highest) {
+            sort_select = SORT_PREF_VOTE;
+            storePref(sort_select);
+            sort_request = SORT_PREF_VOTE;
 
         }
-        if (sortSelect == R.id.sort_by_popularity){
+        if (sortSelect == R.id.sort_by_popularity) {
             sort_select = SORT_PREF_POP;
             storePref(sort_select);
             sort_request = SORT_PREF_POP;
@@ -244,13 +273,27 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Here we save all state of mMovieData for later viewer needs.
+     * We're handling the problem with losing the position of the adapter
+     * when coming back to it after rotating.
+     *
+     * @param outState
+     */
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //outState.putParcelableArrayList(SAVED_INSTANCE_STATE_KEY, mCursor);
+    }
+
 
     /**
      * When a menu option is clicked we walk over here and save the choice into shared
      * preferences so we can handle a rotation change and still display the user's preference.
+     *
      * @param sort_request_store
      */
-    public void storePref (String sort_request_store){
+    public void storePref(String sort_request_store) {
 
         SharedPreferences.Editor editor = getSharedPreferences(USER_PREF, MODE_PRIVATE).edit();
         editor.putString(SORT_PREF_KEY, sort_request_store);
@@ -260,9 +303,10 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
 
     /**
      * Well if we're saving the data above, then this method is probably a way to read it.
+     *
      * @return
      */
-    public String readPref () {
+    public String readPref() {
         SharedPreferences prefs = getSharedPreferences(USER_PREF, MODE_PRIVATE);
         String pref_request = prefs.getString(SORT_PREF_KEY, null);
         if (pref_request == null) {
@@ -270,37 +314,5 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
         }
 
         return pref_request;
-    }
-
-    /** Here we save all state of mMovieData for later viewer needs.
-     * We're handling the problem with losing the position of the adapter
-     * when coming back to it after rotating.
-     * @param outState
-     */
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        //outState.putParcelableArrayList(SAVED_INSTANCE_STATE_KEY, mCursor);
-    }
-
-    private Cursor getAllMovies(){
-        return mDb.query(
-                MovieContract.MovieEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                MovieContract.MovieEntry._ID
-        );
-    }
-
-    @Override
-    public void onClick(int id) {
-//        Context context = this;
-//        //Class destinationClass = MovieDetailActivity.class;
-//        Intent intentToStartMovieDetailActivity = new Intent(context, destinationClass);
-//        intentToStartMovieDetailActivity.putExtra(INTENT_EXTRA_KEY, id);
-//        startActivity(intentToStartMovieDetailActivity);
     }
 }
