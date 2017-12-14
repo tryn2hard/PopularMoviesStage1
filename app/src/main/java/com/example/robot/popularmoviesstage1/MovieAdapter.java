@@ -12,6 +12,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 
 import com.example.robot.popularmoviesstage1.data.MovieContract;
+import com.example.robot.popularmoviesstage1.utilities.PopularMoviesUtils;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -23,8 +24,6 @@ import java.util.ArrayList;
 
 @SuppressWarnings("DefaultFileTemplate")
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
-
-    private ArrayList<Movies> mMovieData;
 
     private Context mContext;
 
@@ -42,7 +41,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      * The interface that receives onClick messages.
      */
     public interface MovieAdapterOnClickHandler {
-        void onClick();
+        void onClick(int id);
     }
 
 
@@ -75,9 +74,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
          */
         @Override
         public void onClick(View v) {
-//            int adapterPosition = getAdapterPosition();
-//            Movies movieSelected = mMovieData.get(adapterPosition);
-//            mClickHandler.onClick(movieSelected);
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            int id = mCursor.getColumnIndex(MovieContract.MovieEntry._ID);
+            mClickHandler.onClick(id);
 
         }
     }
@@ -112,7 +112,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         mCursor.moveToPosition(position);
 
         String moviePosterUrl = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER));
-        String finishedUrl = Movies.imageUrlBuilder(moviePosterUrl);
+        String finishedUrl = PopularMoviesUtils.imageUrlBuilder(moviePosterUrl);
         Context context = holder.mMovieImageView.getContext();
         Picasso.with(context).load(finishedUrl).into(holder.mMovieImageView);
 
@@ -129,21 +129,4 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         return mCursor.getCount();
     }
 
-    /**
-     * Inner class to hold the views needed to display a single item in the recycler-view
-     */
-    class MovieViewHolder extends RecyclerView.ViewHolder {
-
-        // Will display the poster
-        final ImageView posterImageView;
-
-
-        public MovieViewHolder(View itemView) {
-            super(itemView);
-            posterImageView = itemView.findViewById(R.id.iv_movie_poster);
-
-        }
-
-
-    }
 }

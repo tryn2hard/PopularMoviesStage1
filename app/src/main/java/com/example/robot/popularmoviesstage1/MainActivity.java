@@ -6,9 +6,6 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -23,12 +20,7 @@ import android.widget.TextView;
 
 import com.example.robot.popularmoviesstage1.data.MovieContract;
 import com.example.robot.popularmoviesstage1.data.MovieDbHelper;
-import com.example.robot.popularmoviesstage1.data.TestUtil;
-import com.example.robot.popularmoviesstage1.utilities.NetworkUtils;
-import com.example.robot.popularmoviesstage1.utilities.TMDBJsonUtils;
-
-import java.net.URL;
-import java.util.ArrayList;
+import com.example.robot.popularmoviesstage1.utilities.TestUtil;
 
 public class MainActivity extends AppCompatActivity implements MovieAdapter.MovieAdapterOnClickHandler {
 
@@ -304,11 +296,11 @@ public class MainActivity extends AppCompatActivity implements MovieAdapter.Movi
     }
 
     @Override
-    public void onClick() {
+    public void onClick(int id) {
 //        Context context = this;
-//        Class destinationClass = MovieDetailActivity.class;
+//        //Class destinationClass = MovieDetailActivity.class;
 //        Intent intentToStartMovieDetailActivity = new Intent(context, destinationClass);
-//        intentToStartMovieDetailActivity.putExtra(INTENT_EXTRA_KEY, selectedMovie);
+//        intentToStartMovieDetailActivity.putExtra(INTENT_EXTRA_KEY, id);
 //        startActivity(intentToStartMovieDetailActivity);
     }
 }
