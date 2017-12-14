@@ -84,17 +84,11 @@ public class MainActivity extends AppCompatActivity implements
 
         mMovieRecyclerView.setHasFixedSize(true);
 
-        // Creating a new instance of the MovieDbHelper
-        MovieDbHelper dbHelper = new MovieDbHelper(this);
-
-        // Getting a writable database
-        mDb = dbHelper.getWritableDatabase();
-
         // Inserting fake data to test the database
-        TestUtil.insertFakeData(mDb);
+        TestUtil.insertFakeData(this);
 
         // Getting all the data stored in the database
-        Cursor cursor = getAllMovies();
+        //Cursor cursor = getAllMovies();
 
         // Giving the adapter a new click handler
         mMovieAdapter = new MovieAdapter(this, this);
@@ -203,13 +197,8 @@ public class MainActivity extends AppCompatActivity implements
         mLoadingIndicator.setVisibility(View.INVISIBLE);
         mMovieAdapter.swapCursor(data);
         if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-
         mMovieRecyclerView.smoothScrollToPosition(mPosition);
-
-        if (data.getCount() != 0) {
-            showMovieDataView();
-        }
-
+        if (data.getCount() != 0) showMovieDataView();
     }
 
     @Override
@@ -219,11 +208,11 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(int id) {
-//        Context context = this;
-//        //Class destinationClass = MovieDetailActivity.class;
-//        Intent intentToStartMovieDetailActivity = new Intent(context, destinationClass);
-//        intentToStartMovieDetailActivity.putExtra(INTENT_EXTRA_KEY, id);
-//        startActivity(intentToStartMovieDetailActivity);
+        Context context = this;
+        Class destinationClass = MovieDetailActivity.class;
+        Intent intentToStartMovieDetailActivity = new Intent(context, destinationClass);
+        intentToStartMovieDetailActivity.putExtra(INTENT_EXTRA_KEY, id);
+        startActivity(intentToStartMovieDetailActivity);
     }
 
     /**

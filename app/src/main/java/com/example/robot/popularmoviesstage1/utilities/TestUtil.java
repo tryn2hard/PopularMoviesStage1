@@ -1,6 +1,7 @@
 package com.example.robot.popularmoviesstage1.utilities;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
@@ -15,10 +16,7 @@ import java.util.List;
 
 public class TestUtil {
 
-    public static void insertFakeData(SQLiteDatabase db){
-        if(db == null){
-            return;
-        }
+    public static void insertFakeData(Context context){
 
         List<ContentValues> list = new ArrayList<ContentValues>();
 
@@ -26,7 +24,7 @@ public class TestUtil {
 
         ContentValues cv = new ContentValues();
 
-        while(i < 10) {
+        while(i < 9) {
 
             if((i % 2) == 0){
             cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, 346364);
@@ -85,25 +83,10 @@ public class TestUtil {
         }
 
         //insert all guests in one transaction
-        try
-        {
-            db.beginTransaction();
-            //clear the table first
-            db.delete (MovieContract.MovieEntry.TABLE_NAME,null,null);
-            //go through the list and add one by one
-            for(ContentValues c:list){
-                db.insert(MovieContract.MovieEntry.TABLE_NAME, null, c);
-            }
-            db.setTransactionSuccessful();
-        }
-        catch (SQLException e) {
-            //too bad :(
-        }
-        finally
-        {
-            db.endTransaction();
-        }
 
+        context.getContentResolver().bulkInsert(
+                MovieContract.MovieEntry.CONTENT_URI,
+                list.toArray(new ContentValues[20]));
 
     }
 }

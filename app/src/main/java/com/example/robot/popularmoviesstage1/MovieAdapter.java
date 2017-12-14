@@ -27,9 +27,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     private Context mContext;
 
-    private Cursor mCursor;
-
-
     /**
      * An on-click handler that we've defined to make it easy for an Activity to interface with
      * our RecyclerView
@@ -44,6 +41,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         void onClick(int id);
     }
 
+    private Cursor mCursor;
 
     /**
      * Creates a MovieAdapter.
@@ -57,8 +55,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     }
 
-
-
     /**
      * This makes a view feeds it into the adapter.
      * @param viewGroup
@@ -67,9 +63,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      */
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-        Context context = viewGroup.getContext();
+
         int layoutIdForListItem = R.layout.movie_list_item;
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutInflater.from(mContext);
         boolean shouldAttachToParentImmediately = false;
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
         return new MovieAdapterViewHolder(view);
@@ -82,9 +78,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      */
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
-        if(!mCursor.moveToPosition(position)){
-            return;
-        }
         mCursor.moveToPosition(position);
 
         String moviePosterUrl = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER));
@@ -127,9 +120,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
          */
         @Override
         public void onClick(View v) {
-            int adapterPosition = getAdapterPosition();
-            mCursor.moveToPosition(adapterPosition);
-            int id = mCursor.getColumnIndex(MovieContract.MovieEntry._ID);
+
+            int id = mCursor.getInt(mCursor.getColumnIndex(MovieContract.MovieEntry._ID));
             mClickHandler.onClick(id);
 
         }

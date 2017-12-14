@@ -43,7 +43,7 @@ public class MovieDbHelper extends SQLiteOpenHelper {
 
                         MovieContract.MovieEntry.COLUMN_REVIEWS + " TEXT, " +
 
-                        MovieContract.MovieEntry.COLUMN_FAVORITES + " BOOLEAN);";
+                        MovieContract.MovieEntry.COLUMN_FAVORITES + " INTEGER);";
 
         db.execSQL(SQL_CREATE_MOVIE_TABLE);
 
