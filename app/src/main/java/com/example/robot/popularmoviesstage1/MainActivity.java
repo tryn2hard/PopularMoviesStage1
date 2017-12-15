@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -25,6 +27,7 @@ import android.widget.TextView;
 
 import com.example.robot.popularmoviesstage1.data.MovieContract;
 import com.example.robot.popularmoviesstage1.data.MovieDbHelper;
+import com.example.robot.popularmoviesstage1.sync.MovieSyncUtils;
 import com.example.robot.popularmoviesstage1.utilities.TestUtil;
 
 public class MainActivity extends AppCompatActivity implements
@@ -85,9 +88,6 @@ public class MainActivity extends AppCompatActivity implements
 
         mMovieRecyclerView.setHasFixedSize(true);
 
-        // Inserting fake data to test the database
-        TestUtil.insertFakeData(this);
-
         // Getting all the data stored in the database
         //Cursor cursor = getAllMovies();
 
@@ -115,21 +115,16 @@ public class MainActivity extends AppCompatActivity implements
 
         // Here we have our network connectivity check. If the connectivity is no good
         // then we display an error message.
-//        ConnectivityManager cm =
-//                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
-//
-//        @SuppressWarnings("ConstantConditions") NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-//        boolean isConnected = activeNetwork != null &&
-//                activeNetwork.isConnectedOrConnecting();
-//
-//        if(isConnected ){
-//            loadMovieData();
-//        }
-//        else{
-//            mLoadingIndicator.setVisibility(View.GONE);
-//            showErrorMessage();
-//        }
+        ConnectivityManager cm =
+                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
+        @SuppressWarnings("ConstantConditions") NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        if(isConnected ){
+            MovieSyncUtils.startImmediateSync(this);
+        }
 
     }
 

@@ -1,57 +1,76 @@
-//package com.example.robot.popularmoviesstage1.utilities;
-//
-//
-//
-//import org.json.JSONArray;
-//import org.json.JSONException;
-//import org.json.JSONObject;
-//
-//import java.util.ArrayList;
-//
-///**
-// * Created by Robot on 11/14/2017.
-// */
-//
-///**
-// * All the data has to be extracted out, and by golly it was not fun.
-// * Good thing I did it a few times beforehand.
-// */
-//public final class TMDBJsonUtils {
-//
-//    public static ArrayList<list> getMovieFromJson(String movieJsonStr)
-//            throws JSONException {
-//
-//        final String TMDB_RESULTS = "results";
-//
-//        final String TMDB_TITLE = "title";
-//
-//        final String TMDB_VOTE_AVERAGE = "vote_average";
-//
-//        final String TMDB_POSTER_PATH = "poster_path";
-//
-//        final String TMDB_OVERVIEW = "overview";
-//
-//        final String TMDB_RELEASE_DATE = "release_date";
-//
-//        ArrayList<Movies> movies = new ArrayList<>();
-//
-//        JSONObject moviesJson = new JSONObject(movieJsonStr);
-//
-//        JSONArray results = moviesJson.getJSONArray(TMDB_RESULTS);
-//
-//        for (int i = 0; i < results.length(); i++) {
-//
-//            JSONObject r = results.getJSONObject(i);
-//            String title = r.getString(TMDB_TITLE);
-//            Double vote_average = r.getDouble(TMDB_VOTE_AVERAGE);
-//            String poster_path = r.getString(TMDB_POSTER_PATH);
-//            String overview = r.getString(TMDB_OVERVIEW);
-//            String release_date = r.getString(TMDB_RELEASE_DATE);
-//
-//            movies.add(new Movies(title, poster_path, overview, release_date, vote_average));
-//
-//        }
-//
-//        return movies;
-//    }
-//}
+package com.example.robot.popularmoviesstage1.utilities;
+
+
+
+import android.content.ContentValues;
+import android.content.Context;
+
+import com.example.robot.popularmoviesstage1.data.MovieContract;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
+/**
+ * Created by Robot on 11/14/2017.
+ */
+
+/**
+ * All the data has to be extracted out, and by golly it was not fun.
+ * Good thing I did it a few times beforehand.
+ */
+public final class TMDBJsonUtils {
+
+    private static final String TMDB_MOVIE_ID = "id";
+
+    private static final String TMDB_RESULTS = "results";
+
+    private static final String TMDB_TITLE = "title";
+
+    private static final String TMDB_VOTE_AVERAGE = "vote_average";
+
+    private static final String TMDB_POSTER_PATH = "poster_path";
+
+    private static final String TMDB_OVERVIEW = "overview";
+
+    private static final String TMDB_RELEASE_DATE = "release_date";
+
+    public static ContentValues[] getMovieFromJson(Context context, String movieJsonStr)
+            throws JSONException {
+
+
+        JSONObject moviesJson = new JSONObject(movieJsonStr);
+
+        JSONArray results = moviesJson.getJSONArray(TMDB_RESULTS);
+
+        ContentValues[] movieContentValues = new ContentValues[results.length()];
+
+        for (int i = 0; i < results.length(); i++) {
+
+            JSONObject r = results.getJSONObject(i);
+            int movie_id = r.getInt(TMDB_MOVIE_ID);
+            String title = r.getString(TMDB_TITLE);
+            String release_date = r.getString(TMDB_RELEASE_DATE);
+            String poster_path = r.getString(TMDB_POSTER_PATH);
+            Double vote_average = r.getDouble(TMDB_VOTE_AVERAGE);
+            String overview = r.getString(TMDB_OVERVIEW);
+
+
+
+
+            ContentValues cv = new ContentValues();
+            cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movie_id);
+            cv.put(MovieContract.MovieEntry.COLUMN_TITLE, title);
+            cv.put(MovieContract.MovieEntry.COLUMN_RELEASE_DATE, release_date);
+            cv.put(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER, poster_path);
+            cv.put(MovieContract.MovieEntry.COLUMN_VOTE_AVG, vote_average);
+            cv.put(MovieContract.MovieEntry.COLUMN_SYNOPSIS, overview);
+
+            movieContentValues[i] = cv;
+
+        }
+
+        return movieContentValues;
+    }
+}
