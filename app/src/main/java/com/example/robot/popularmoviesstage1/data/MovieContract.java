@@ -59,5 +59,13 @@ public class MovieContract {
         public static final String COLUMN_REVIEWS = "reviews";
 
         public static final String COLUMN_FAVORITES = "favorites";
+
+        public static Uri buildMovieUriWithId(int id){
+            return CONTENT_URI.buildUpon()
+                    .appendPath(Integer.toString(id))
+                    .build();
+        }
     }
+
+
 }

@@ -14,6 +14,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -47,9 +48,9 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    private SQLiteDatabase mDb;
-
-    public static final String[] MAIN_MOVIE_PROJECTION = {MovieContract.MovieEntry.COLUMN_MOVIE_POSTER};
+    public static final String[] MAIN_MOVIE_PROJECTION = {
+            MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,
+            MovieContract.MovieEntry.COLUMN_MOVIE_ID};
 
     public static final int INDEX_MOVIE_POSTER = 0;
 
@@ -161,17 +162,6 @@ public class MainActivity extends AppCompatActivity implements
         mLoadingIndicator.setVisibility(View.VISIBLE);
     }
 
-    private Cursor getAllMovies() {
-        return mDb.query(
-                MovieContract.MovieEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                MovieContract.MovieEntry._ID
-        );
-    }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle loaderArgs) {
@@ -182,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements
                 return new CursorLoader(this,
                         movieQueryUri,
                         MAIN_MOVIE_PROJECTION,
-                        null,
+                        MovieContract.MovieEntry.COLUMN_MOVIE_ID,
                         null,
                         null);
             default:
@@ -209,9 +199,10 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onClick(int id) {
         Context context = this;
+        Log.d("debug Main", "movie id " + id);
         Class destinationClass = MovieDetailActivity.class;
         Intent intentToStartMovieDetailActivity = new Intent(context, destinationClass);
-        intentToStartMovieDetailActivity.putExtra(INTENT_EXTRA_KEY, id);
+        intentToStartMovieDetailActivity.setData(MovieContract.MovieEntry.buildMovieUriWithId(id));
         startActivity(intentToStartMovieDetailActivity);
     }
 

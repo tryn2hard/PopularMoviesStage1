@@ -44,6 +44,7 @@ public class MovieProvider extends ContentProvider {
         final SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
         switch (sUriMatcher.match(uri)) {
+
             case CODE_MOVIE:
                 db.beginTransaction();
                 int rowsInserted = 0;
@@ -90,6 +91,22 @@ public class MovieProvider extends ContentProvider {
                         null,
                         sortOrder);
 
+                break;
+
+            }
+
+            case CODE_MOVIE_WITH_ID: {
+                String movieIdString = uri.getLastPathSegment();
+                String[] selectionArguments = new String[]{movieIdString};
+
+                cursor = mOpenHelper.getReadableDatabase().query(
+                        MovieContract.MovieEntry.TABLE_NAME,
+                        projection,
+                        MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ? ",
+                        selectionArguments,
+                        null,
+                        null,
+                        sortOrder);
                 break;
 
             }

@@ -9,6 +9,7 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.ViewDebug;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -77,20 +78,14 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
         if (intentThatStartedThisActivity != null) {
 
-            if (intentThatStartedThisActivity.hasExtra(MainActivity.INTENT_EXTRA_KEY)) {
-                int id = getIntent().getIntExtra(MainActivity.INTENT_EXTRA_KEY, 0);
+            mUri = intentThatStartedThisActivity.getData();
 
-                String path_id = Integer.toString(id);
-
-                Uri movieUri = MovieContract.MovieEntry.CONTENT_URI.buildUpon()
-                        .appendPath(path_id)
-                        .build();
-
-                mUri = movieUri;
-
-                getSupportLoaderManager().initLoader(ID_DETAIL_ACTIVITY_LOADER, null, this);
-
+            if(mUri == null) {
+                throw new NullPointerException("uri is null");
             }
+
+            getSupportLoaderManager().initLoader(ID_DETAIL_ACTIVITY_LOADER, null, this);
+
         }
     }
 
@@ -111,15 +106,19 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if(data == null) return;
+
+        data.moveToNext();
+
         String title = data.getString(MOVIE_INDEX_TITLE);
-        mMovieTitle.setContentDescription(title);
+        mMovieTitle.setText(title);
         String date = data.getString(MOVIE_INDEX_RELEASE_DATE);
         mMovieReleaseDate.setText(date);
         String poster = data.getString(MOVIE_INDEX_MOVIE_POSTER);
         String posterUrl = PopularMoviesUtils.imageUrlBuilder(poster);
         Picasso.with(this).load(posterUrl).into(mMoviePoster);
         int voteAvg = data.getInt(MOVIE_INDEX_VOTE_AVG);
-        mMovieRating.setText(voteAvg);
+        mMovieRating.setText(Integer.toString(voteAvg));
         String synopsis = data.getString(MOVIE_INDEX_SYNOPSIS);
         mMovieSynopsis.setText(synopsis);
     }

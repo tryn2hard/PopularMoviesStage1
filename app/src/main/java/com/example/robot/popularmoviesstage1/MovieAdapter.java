@@ -4,6 +4,7 @@ package com.example.robot.popularmoviesstage1;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,9 +24,9 @@ import java.util.ArrayList;
  */
 
 @SuppressWarnings("DefaultFileTemplate")
-public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
+class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
-    private Context mContext;
+    private final Context mContext;
 
     /**
      * An on-click handler that we've defined to make it easy for an Activity to interface with
@@ -51,7 +52,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
      */
     public MovieAdapter(MovieAdapterOnClickHandler clickHandler, Context context) {
         mClickHandler = clickHandler;
-        this.mContext = context;
+        mContext = context;
 
     }
 
@@ -68,6 +69,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         LayoutInflater inflater = LayoutInflater.from(mContext);
         boolean shouldAttachToParentImmediately = false;
         View view = inflater.inflate(layoutIdForListItem, viewGroup, shouldAttachToParentImmediately);
+        view.setFocusable(true);
         return new MovieAdapterViewHolder(view);
     }
 
@@ -98,19 +100,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         return mCursor.getCount();
     }
 
-    public void swapCursor(Cursor cursor){
+    void swapCursor(Cursor cursor){
         mCursor = cursor;
         notifyDataSetChanged();
     }
 
-    public class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements OnClickListener {
+    class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public final ImageView mMovieImageView;
+        final ImageView mMovieImageView;
+
 
         public MovieAdapterViewHolder(View view) {
             super(view);
             mMovieImageView = view.findViewById(R.id.iv_movie_poster);
             view.setOnClickListener(this);
+
         }
 
         /**
@@ -121,8 +125,9 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         @Override
         public void onClick(View v) {
 
-            int id = mCursor.getInt(mCursor.getColumnIndex(MovieContract.MovieEntry._ID));
-            mClickHandler.onClick(id);
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            mClickHandler.onClick(mCursor.getInt(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_ID)));
 
         }
     }
