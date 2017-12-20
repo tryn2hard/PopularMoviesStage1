@@ -10,10 +10,24 @@ import android.support.annotation.Nullable;
 
 public class MovieSyncIntentService extends IntentService {
 
+    private static String user_sort_request;
+
+    private static int movieId;
+
     public MovieSyncIntentService(){super("MovieSyncIntentService");}
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        MovieSyncTask.syncMovie(this);
+        if(intent.hasExtra("key")) {
+            user_sort_request = intent.getStringExtra("key");
+            MovieSyncTask.syncMovie(this, user_sort_request );
+        } else if(intent.hasExtra("reviews_key")){
+            movieId = intent.getIntExtra("reviews_key", 0);
+            MovieSyncTask.syncReviews(this, movieId);
+        } else if(intent.hasExtra("trailers_key")){
+            movieId = intent.getIntExtra("trailers_key", 0);
+            MovieSyncTask.syncTrailers(this, movieId);
+        }
+
     }
 }

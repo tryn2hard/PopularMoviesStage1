@@ -76,6 +76,54 @@ public class NetworkUtils {
         return url;
     }
 
+    public static URL buildUrlForReviews (int movieId){
+
+
+        Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendPath(Integer.toString(movieId))
+                .appendPath("reviews")
+                .appendQueryParameter(API_KEY, BuildConfig.THE_MOVIE_DB_API_TOKEN)
+
+                .build();
+
+        Log.d("movieid_uri","built uri = " + builtUri);
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e){
+            e.printStackTrace();
+        }
+
+        Log.v(TAG, "Built URI" + url);
+
+        return url;
+    }
+
+    public static URL buildUrlForTrailers (int movieId){
+
+
+        Uri builtUri = Uri.parse(MOVIE_BASE_URL).buildUpon()
+                .appendPath(Integer.toString(movieId))
+                .appendPath("videos")
+                .appendQueryParameter(API_KEY, BuildConfig.THE_MOVIE_DB_API_TOKEN)
+
+                .build();
+
+        Log.d("movieid_uri","built uri = " + builtUri);
+
+        URL url = null;
+        try {
+            url = new URL(builtUri.toString());
+        } catch (MalformedURLException e){
+            e.printStackTrace();
+        }
+
+        Log.v(TAG, "Built URI" + url);
+
+        return url;
+    }
+
     /**
      * Method to query TMDB and collect the JSON data.
      * Wish I knew a little more about scanner, but hey

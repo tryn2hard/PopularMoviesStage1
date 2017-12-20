@@ -18,6 +18,8 @@ public class MovieContract {
     // path to access movie data
     public static final String PATH_MOVIE = "movie";
 
+    public static final String PATH_FAVORITES = "favorites";
+
     // Inner class that defines the table contents of the movie table
     public static final class MovieEntry implements BaseColumns {
 
@@ -26,8 +28,14 @@ public class MovieContract {
                 .appendPath(PATH_MOVIE)
                 .build();
 
+        public static final Uri CONTENT_URI_FAVORITES = BASE_CONTENT_URI.buildUpon()
+                .appendPath(PATH_FAVORITES)
+                .build();
+
         // Used inside the database as the name of the table
         public static final String TABLE_NAME = "movie";
+
+        public static final String TABLE_NAME_FAVORITES = "favorites";
 
         /* the various columns we will have in the table (schema??)
         so the plan is to have the following:

@@ -10,9 +10,22 @@ import android.support.annotation.NonNull;
 
 public class MovieSyncUtils {
 
-        public static void startImmediateSync(@NonNull final Context context){
+        public static void startImmediateSync(@NonNull final Context context, String sort_request){
             Intent intentForImmediateSync = new Intent(context, MovieSyncIntentService.class);
+            intentForImmediateSync.putExtra("key", sort_request);
             context.startService(intentForImmediateSync);
+        }
+
+        public static void startSyncForReviews(@NonNull final Context context, int movieId){
+            Intent intentForReviews = new Intent(context, MovieSyncIntentService.class);
+            intentForReviews.putExtra("reviews_key", movieId);
+            context.startService(intentForReviews);
+        }
+
+        public static void startSyncForTrailers(@NonNull final Context context, int movieId){
+            Intent intentForTrailers = new Intent(context, MovieSyncIntentService.class);
+            intentForTrailers.putExtra("trailers_key", movieId);
+            context.startService(intentForTrailers);
         }
     }
 

@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -23,6 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 import com.example.robot.popularmoviesstage1.data.MovieContract;
@@ -100,10 +102,11 @@ public class MainActivity extends AppCompatActivity implements
 
         // This little snippet checks to see if we have any saved data from a
         // previous session and loads it into the adapter.
-//        if(savedInstanceState != null){
-//            mMovieData = savedInstanceState.getParcelableArrayList(SAVED_INSTANCE_STATE_KEY);
-//            mMovieAdapter.setMovieData(mMovieData);
-//        }
+        if(savedInstanceState != null){
+            Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable("KeyForLayoutManagerState");
+            mMovieRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
+            Toast.makeText(this, "used saved instance state", Toast.LENGTH_LONG).show();
+        }
 
         // More linking of views to their variables
 
@@ -123,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements
                 activeNetwork.isConnectedOrConnecting();
 
         if(isConnected ){
-            MovieSyncUtils.startImmediateSync(this);
+            MovieSyncUtils.startImmediateSync(this, sort_request);
         }
 
     }
@@ -237,13 +240,14 @@ public class MainActivity extends AppCompatActivity implements
             sort_select = SORT_PREF_VOTE;
             storePref(sort_select);
             sort_request = SORT_PREF_VOTE;
+            MovieSyncUtils.startImmediateSync(this, sort_request);
 
         }
         if (sortSelect == R.id.sort_by_popularity) {
             sort_select = SORT_PREF_POP;
             storePref(sort_select);
             sort_request = SORT_PREF_POP;
-
+            MovieSyncUtils.startImmediateSync(this, sort_request);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -256,9 +260,11 @@ public class MainActivity extends AppCompatActivity implements
      * @param outState
      */
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //outState.putParcelableArrayList(SAVED_INSTANCE_STATE_KEY, mCursor);
+        Toast.makeText(this, "saved instance state", Toast.LENGTH_LONG).show();
+        
+        outState.putParcelable("KeyForLayoutManagerState", mMovieRecyclerView.getLayoutManager().onSaveInstanceState());
     }
 
 
@@ -283,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements
      */
     public String readPref() {
         SharedPreferences prefs = getSharedPreferences(USER_PREF, MODE_PRIVATE);
-        String pref_request = prefs.getString(SORT_PREF_KEY, null);
+        String pref_request = prefs.getString(SORT_PREF_KEY, SORT_PREF_POP);
         if (pref_request == null) {
             pref_request = prefs.getString(SORT_PREF_KEY, SORT_PREF_POP);
         }
