@@ -73,6 +73,12 @@ public class MovieContract {
                     .appendPath(Integer.toString(id))
                     .build();
         }
+
+        public static Uri buildFavMovieUriWithId(int id){
+            return CONTENT_URI_FAVORITES.buildUpon()
+                    .appendPath(Integer.toString(id))
+                    .build();
+        }
     }
 
 

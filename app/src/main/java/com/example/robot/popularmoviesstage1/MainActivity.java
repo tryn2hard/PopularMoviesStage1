@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements
 
     public static final String SORT_PREF_POP = "popular?";
 
+    public static final String SORT_PREF_FAV = "favorites";
+
     public static final String INTENT_EXTRA_KEY = "data";
 
     public static final String SAVED_INSTANCE_STATE_KEY = "saved";
@@ -125,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
-        if(isConnected ){
+        if(isConnected && !sort_request.equals(SORT_PREF_FAV)){
             MovieSyncUtils.startImmediateSync(this, sort_request);
         }
 
@@ -163,12 +165,17 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle loaderArgs) {
+        Uri contentUri;
         switch (id) {
             case ID_MOVIE_LOADER:
-                Uri movieQueryUri = MovieContract.MovieEntry.CONTENT_URI;
 
+                if(sort_request.equals(SORT_PREF_FAV)){
+                    contentUri = MovieContract.MovieEntry.CONTENT_URI_FAVORITES;
+                }else {
+                    contentUri = MovieContract.MovieEntry.CONTENT_URI;
+                }
                 return new CursorLoader(this,
-                        movieQueryUri,
+                        contentUri,
                         MAIN_MOVIE_PROJECTION,
                         MovieContract.MovieEntry.COLUMN_MOVIE_ID,
                         null,
@@ -196,11 +203,18 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onClick(int id) {
+        Uri passingUri;
         Context context = this;
         Log.d("debug Main", "movie id " + id);
         Class destinationClass = MovieDetailActivity.class;
         Intent intentToStartMovieDetailActivity = new Intent(context, destinationClass);
-        intentToStartMovieDetailActivity.setData(MovieContract.MovieEntry.buildMovieUriWithId(id));
+        if(sort_request.equals(SORT_PREF_FAV)){
+            passingUri = MovieContract.MovieEntry.buildFavMovieUriWithId(id);
+        }
+        else{
+            passingUri = MovieContract.MovieEntry.buildMovieUriWithId(id);
+        }
+        intentToStartMovieDetailActivity.setData(passingUri);
         startActivity(intentToStartMovieDetailActivity);
     }
 
@@ -241,6 +255,7 @@ public class MainActivity extends AppCompatActivity implements
             storePref(sort_select);
             sort_request = SORT_PREF_VOTE;
             MovieSyncUtils.startImmediateSync(this, sort_request);
+            getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER, null, this);
 
         }
         if (sortSelect == R.id.sort_by_popularity) {
@@ -248,6 +263,14 @@ public class MainActivity extends AppCompatActivity implements
             storePref(sort_select);
             sort_request = SORT_PREF_POP;
             MovieSyncUtils.startImmediateSync(this, sort_request);
+            getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER, null, this);
+        }
+        if (sortSelect == R.id.sort_by_favorites) {
+            sort_select = SORT_PREF_FAV;
+            storePref(sort_select);
+            sort_request = SORT_PREF_FAV;
+            //todo tell the acitivty to display favorites list
+            getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER, null, this);
         }
         return super.onOptionsItemSelected(item);
     }

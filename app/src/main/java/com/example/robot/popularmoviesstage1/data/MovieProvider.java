@@ -20,6 +20,7 @@ public class MovieProvider extends ContentProvider {
     public static final int CODE_MOVIE = 100;
     public static final int CODE_MOVIE_WITH_ID = 101;
     public static final int CODE_MOVIE_FAVORITES = 200;
+    public static final int CODE_FAV_MOVIE_WITH_ID = 201;
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MovieDbHelper mMovieHelper;
@@ -33,7 +34,9 @@ public class MovieProvider extends ContentProvider {
 
         matcher.addURI(authority, MovieContract.PATH_MOVIE + "/#", CODE_MOVIE_WITH_ID);
 
-        matcher.addURI(authority, MovieContract.PATH_FAVORITES + "/#", CODE_MOVIE_FAVORITES);
+        matcher.addURI(authority, MovieContract.PATH_FAVORITES, CODE_MOVIE_FAVORITES);
+
+        matcher.addURI(authority, MovieContract.PATH_FAVORITES + "/#", CODE_FAV_MOVIE_WITH_ID);
 
         return matcher;
     }
@@ -128,6 +131,22 @@ public class MovieProvider extends ContentProvider {
                         null,
                         sortOrder);
                 break;
+            }
+
+            case CODE_FAV_MOVIE_WITH_ID: {
+                String movieIdString = uri.getLastPathSegment();
+                String[] selectionArguments = new String[]{movieIdString};
+
+                cursor = mFavoriteHelper.getReadableDatabase().query(
+                        MovieContract.MovieEntry.TABLE_NAME_FAVORITES,
+                        projection,
+                        MovieContract.MovieEntry.COLUMN_MOVIE_ID + " = ? ",
+                        selectionArguments,
+                        null,
+                        null,
+                        sortOrder);
+                break;
+
             }
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

@@ -10,6 +10,7 @@
 
     <!-- Sort by Highest Rated menu option -->
     <string name="sort_by_highest">Highest Rated</string>
+    <string name="favorites">Favorites</string>
 
 
 </resources>
