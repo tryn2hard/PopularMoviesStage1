@@ -7,12 +7,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 /**
  * Created by Robot on 12/19/2017.
  */
-
+// Creating the database schema
 public class FavoritesDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "favorites.db";
 
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     public FavoritesDbHelper(Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -41,7 +41,10 @@ public class FavoritesDbHelper extends SQLiteOpenHelper {
 
                         MovieContract.MovieEntry.COLUMN_TRAILERS + " TEXT, " +
 
-                        MovieContract.MovieEntry.COLUMN_REVIEWS + " TEXT);";
+                        MovieContract.MovieEntry.COLUMN_REVIEWS + " TEXT, " +
+
+                        // this handy bit of code helps to make sure a movie is inputted twice into our favorites table
+                        " UNIQUE (" + MovieContract.MovieEntry.COLUMN_MOVIE_ID + ") ON CONFLICT REPLACE);";
 
         db.execSQL(SQL_CREATE_MOVIE_TABLE);
 

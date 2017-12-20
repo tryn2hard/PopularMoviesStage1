@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
  * Created by Robot on 12/15/2017.
  */
 
+// Here we take our intents and turn them into our services to be done on a background thread
 public class MovieSyncUtils {
 
         public static void startImmediateSync(@NonNull final Context context, String sort_request){

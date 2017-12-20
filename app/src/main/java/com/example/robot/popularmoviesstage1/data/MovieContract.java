@@ -18,6 +18,7 @@ public class MovieContract {
     // path to access movie data
     public static final String PATH_MOVIE = "movie";
 
+    // path to access favorite movie data
     public static final String PATH_FAVORITES = "favorites";
 
     // Inner class that defines the table contents of the movie table
@@ -28,6 +29,7 @@ public class MovieContract {
                 .appendPath(PATH_MOVIE)
                 .build();
 
+        // The base content uri used to query the favorite table from the content provider
         public static final Uri CONTENT_URI_FAVORITES = BASE_CONTENT_URI.buildUpon()
                 .appendPath(PATH_FAVORITES)
                 .build();
@@ -35,6 +37,7 @@ public class MovieContract {
         // Used inside the database as the name of the table
         public static final String TABLE_NAME = "movie";
 
+        // Name for the favorites table
         public static final String TABLE_NAME_FAVORITES = "favorites";
 
         /* the various columns we will have in the table (schema??)
@@ -66,14 +69,14 @@ public class MovieContract {
 
         public static final String COLUMN_REVIEWS = "reviews";
 
-        public static final String COLUMN_FAVORITES = "favorites";
-
+        // Helper method to build the uri for the moive's table with the movie id attached
         public static Uri buildMovieUriWithId(int id){
             return CONTENT_URI.buildUpon()
                     .appendPath(Integer.toString(id))
                     .build();
         }
 
+        // Helper method to build the uri for the favorite's table with the movie id attached
         public static Uri buildFavMovieUriWithId(int id){
             return CONTENT_URI_FAVORITES.buildUpon()
                     .appendPath(Integer.toString(id))

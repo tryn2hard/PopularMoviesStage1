@@ -17,15 +17,18 @@ import android.util.Log;
 
 public class MovieProvider extends ContentProvider {
 
+    // int values for our uri matcher to use
     public static final int CODE_MOVIE = 100;
     public static final int CODE_MOVIE_WITH_ID = 101;
     public static final int CODE_MOVIE_FAVORITES = 200;
     public static final int CODE_FAV_MOVIE_WITH_ID = 201;
 
+
     private static final UriMatcher sUriMatcher = buildUriMatcher();
     private MovieDbHelper mMovieHelper;
     private FavoritesDbHelper mFavoriteHelper;
 
+    // building our uriMatcher and adding the code values we'll be matching up with
     public static UriMatcher buildUriMatcher(){
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
         final String authority = MovieContract.CONTENT_AUTHORITY;
@@ -44,12 +47,14 @@ public class MovieProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
 
+        // Creating our helpers to give us workability with our databases
         mMovieHelper = new MovieDbHelper(getContext());
         mFavoriteHelper = new FavoritesDbHelper(getContext());
 
         return true;
     }
 
+    // Used only by the movie database. Done when we sync our movie data with the api
     @Override
     public int bulkInsert(@NonNull Uri uri, @NonNull ContentValues[] values) {
         final SQLiteDatabase db = mMovieHelper.getWritableDatabase();
@@ -86,6 +91,7 @@ public class MovieProvider extends ContentProvider {
         }
     }
 
+    // Getting readable data from the databases. Can either be a whole table or a single row.
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
@@ -162,6 +168,7 @@ public class MovieProvider extends ContentProvider {
         return null;
     }
 
+    // Using this to insert data from the movie table into the favorites table (done in detailMovieActivity)
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
@@ -178,6 +185,9 @@ public class MovieProvider extends ContentProvider {
         return ContentUris.withAppendedId(uri, id);
     }
 
+    // Deleting the database when we notice a change in sort request from popularity or rating. Not
+    // used by the favorites table although I should probably give users the option of removing movies
+    // from their favorites list
     @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         int numRowsDeleted;
@@ -193,6 +203,16 @@ public class MovieProvider extends ContentProvider {
                         selectionArgs);
                 break;
 
+            case CODE_FAV_MOVIE_WITH_ID:
+                String id = uri.getPathSegments().get(1);
+                String mSelection = " _id=?";
+                String[] mSelectionArgs = new String[]{id};
+                numRowsDeleted = mFavoriteHelper.getWritableDatabase().delete(
+                        MovieContract.MovieEntry.TABLE_NAME_FAVORITES,
+                        mSelection,
+                        mSelectionArgs);
+                break;
+
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -204,6 +224,7 @@ public class MovieProvider extends ContentProvider {
         return numRowsDeleted;
     }
 
+    // Updating the movie table with trailers and reviews.
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
         final int match = sUriMatcher.match(uri);

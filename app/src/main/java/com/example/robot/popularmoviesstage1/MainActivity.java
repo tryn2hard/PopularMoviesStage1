@@ -17,6 +17,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -55,11 +56,10 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-    public static final String[] MAIN_MOVIE_PROJECTION = {
+    private static final String[] MAIN_MOVIE_PROJECTION = {
             MovieContract.MovieEntry.COLUMN_MOVIE_POSTER,
-            MovieContract.MovieEntry.COLUMN_MOVIE_ID};
-
-    public static final int INDEX_MOVIE_POSTER = 0;
+            MovieContract.MovieEntry.COLUMN_MOVIE_ID,
+            MovieContract.MovieEntry._ID};
 
     private static final int ID_MOVIE_LOADER = 44;
 
@@ -92,42 +92,62 @@ public class MainActivity extends AppCompatActivity implements
 
         mMovieRecyclerView.setHasFixedSize(true);
 
-        // Getting all the data stored in the database
-        //Cursor cursor = getAllMovies();
-
         // Giving the adapter a new click handler
         mMovieAdapter = new MovieAdapter(this, this);
 
         // Attaching the adapter to the recyclerView
         mMovieRecyclerView.setAdapter(mMovieAdapter);
 
+        // Start the cursorLoader
+        getSupportLoaderManager().initLoader(ID_MOVIE_LOADER, null, this);
+
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            // Called when a user swipes left or right on a ViewHolder
+            @Override
+            public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                // Here is where you'll implement swipe to delete
+                int id = (int) viewHolder.itemView.getTag();
+
+                String stringId = Integer.toString(id);
+                Uri uri = MovieContract.MovieEntry.CONTENT_URI_FAVORITES;
+                uri = uri.buildUpon().appendPath(stringId).build();
+
+                getContentResolver().delete(uri, null, null);
+                getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER, null, MainActivity.this);
+            }
+        }).attachToRecyclerView(mMovieRecyclerView);
+
 
         // This little snippet checks to see if we have any saved data from a
         // previous session and loads it into the adapter.
-        if(savedInstanceState != null){
+        if (savedInstanceState != null) {
             Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable("KeyForLayoutManagerState");
             mMovieRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
-            Toast.makeText(this, "used saved instance state", Toast.LENGTH_LONG).show();
         }
 
         // More linking of views to their variables
-
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
+        // Show the progress bar
         showLoading();
-
-        getSupportLoaderManager().initLoader(ID_MOVIE_LOADER, null, this);
 
         // Here we have our network connectivity check. If the connectivity is no good
         // then we display an error message.
         ConnectivityManager cm =
-                (ConnectivityManager)this.getSystemService(Context.CONNECTIVITY_SERVICE);
+                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
         @SuppressWarnings("ConstantConditions") NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         boolean isConnected = activeNetwork != null &&
                 activeNetwork.isConnectedOrConnecting();
 
-        if(isConnected && !sort_request.equals(SORT_PREF_FAV)){
+        // if there is internet connectivity and the sort request is not equal to favorites launch the service
+        if (isConnected && !sort_request.equals(SORT_PREF_FAV)) {
             MovieSyncUtils.startImmediateSync(this, sort_request);
         }
 
@@ -169,9 +189,10 @@ public class MainActivity extends AppCompatActivity implements
         switch (id) {
             case ID_MOVIE_LOADER:
 
-                if(sort_request.equals(SORT_PREF_FAV)){
+                //Which table do I want to query from? Movies or Favorites
+                if (sort_request.equals(SORT_PREF_FAV)) {
                     contentUri = MovieContract.MovieEntry.CONTENT_URI_FAVORITES;
-                }else {
+                } else {
                     contentUri = MovieContract.MovieEntry.CONTENT_URI;
                 }
                 return new CursorLoader(this,
@@ -201,6 +222,12 @@ public class MainActivity extends AppCompatActivity implements
         mMovieAdapter.swapCursor(null);
     }
 
+    /**
+     * On click MovieDetailActivity will start. It will be supplied with the proper uri
+     * to query the correct database. The uri will be built using the id passed in.
+     *
+     * @param id
+     */
     @Override
     public void onClick(int id) {
         Uri passingUri;
@@ -208,10 +235,9 @@ public class MainActivity extends AppCompatActivity implements
         Log.d("debug Main", "movie id " + id);
         Class destinationClass = MovieDetailActivity.class;
         Intent intentToStartMovieDetailActivity = new Intent(context, destinationClass);
-        if(sort_request.equals(SORT_PREF_FAV)){
+        if (sort_request.equals(SORT_PREF_FAV)) {
             passingUri = MovieContract.MovieEntry.buildFavMovieUriWithId(id);
-        }
-        else{
+        } else {
             passingUri = MovieContract.MovieEntry.buildMovieUriWithId(id);
         }
         intentToStartMovieDetailActivity.setData(passingUri);
@@ -285,8 +311,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        Toast.makeText(this, "saved instance state", Toast.LENGTH_LONG).show();
-        
+
         outState.putParcelable("KeyForLayoutManagerState", mMovieRecyclerView.getLayoutManager().onSaveInstanceState());
     }
 

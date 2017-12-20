@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
  * Created by Robot on 12/13/2017.
  */
 
+// Creating the SQLite database schema
 public class MovieDbHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "movie.db";
@@ -44,8 +45,6 @@ public class MovieDbHelper extends SQLiteOpenHelper {
                         MovieContract.MovieEntry.COLUMN_REVIEWS + " TEXT);";
 
         db.execSQL(SQL_CREATE_MOVIE_TABLE);
-
-
 
     }
 

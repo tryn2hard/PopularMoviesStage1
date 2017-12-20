@@ -20,6 +20,7 @@ public class MovieSyncTask {
     private static String user_sort_request;
 
 
+    // We query api and get all the movies we want based on our sort criteria
     synchronized public static void syncMovie(Context context, String sort_request){
 
         user_sort_request = sort_request;
@@ -44,6 +45,7 @@ public class MovieSyncTask {
         }
     }
 
+    // A request for the reviews to a specific movie id
     synchronized public static void syncReviews(Context context, int movieId){
 
         try{
@@ -74,6 +76,7 @@ public class MovieSyncTask {
         }
     }
 
+    // A request for a movie trailer of a specific movie
     synchronized public static void syncTrailers(Context context, int movieId) {
 
         try {

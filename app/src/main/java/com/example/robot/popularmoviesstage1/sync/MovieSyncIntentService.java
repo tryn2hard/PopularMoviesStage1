@@ -18,6 +18,8 @@ public class MovieSyncIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
+        // Creating our intents based on passed in keys. We can either sync all the movie data,
+        // get user reviews, or get movie trailers
         if(intent.hasExtra("key")) {
             user_sort_request = intent.getStringExtra("key");
             MovieSyncTask.syncMovie(this, user_sort_request );

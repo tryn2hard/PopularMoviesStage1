@@ -80,13 +80,15 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHol
      */
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
+        int idIndex = mCursor.getColumnIndex(MovieContract.MovieEntry._ID);
         mCursor.moveToPosition(position);
 
         String moviePosterUrl = mCursor.getString(mCursor.getColumnIndex(MovieContract.MovieEntry.COLUMN_MOVIE_POSTER));
         String finishedUrl = PopularMoviesUtils.imageUrlBuilder(moviePosterUrl);
         Context context = holder.mMovieImageView.getContext();
         Picasso.with(context).load(finishedUrl).into(holder.mMovieImageView);
-
+        final int id = mCursor.getInt(idIndex);
+        holder.itemView.setTag(id);
     }
 
 
@@ -100,6 +102,7 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHol
         return mCursor.getCount();
     }
 
+    // Helper method to update the adapter with the proper cursor
     void swapCursor(Cursor cursor){
         mCursor = cursor;
         notifyDataSetChanged();

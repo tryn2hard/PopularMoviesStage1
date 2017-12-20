@@ -35,6 +35,7 @@ public class NetworkUtils {
 
     private static final String include_video = "false";
 
+    // I really wanna make this change based on the user scrolling to the bottom of the recyclerview
     private static final String page = "1";
 
 
