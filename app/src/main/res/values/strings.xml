@@ -11,6 +11,12 @@
     <!-- Sort by Highest Rated menu option -->
     <string name="sort_by_highest">Highest Rated</string>
     <string name="favorites">Favorites</string>
+    <string name="synopsis">Synopsis</string>
+    <string name="release_date">Release Date</string>
+    <string name="user_reviews">User reviews</string>
+    <string name="reviews">Reviews</string>
+    <string name="trailer">Trailer</string>
+    <string name="add_to_favorites">add to favorites</string>
 
 
 </resources>
