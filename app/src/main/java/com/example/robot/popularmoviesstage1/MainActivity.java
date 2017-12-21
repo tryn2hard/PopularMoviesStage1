@@ -50,10 +50,6 @@ public class MainActivity extends AppCompatActivity implements
 
     public static final String SORT_PREF_FAV = "favorites";
 
-    public static final String INTENT_EXTRA_KEY = "data";
-
-    public static final String SAVED_INSTANCE_STATE_KEY = "saved";
-
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private static final String[] MAIN_MOVIE_PROJECTION = {
@@ -70,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements
     private MovieAdapter mMovieAdapter;
 
     private int mPosition = RecyclerView.NO_POSITION;
+
+    private Parcelable mListState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +99,8 @@ public class MainActivity extends AppCompatActivity implements
         // Start the cursorLoader
         getSupportLoaderManager().initLoader(ID_MOVIE_LOADER, null, this);
 
-
+        // Using the touch helper to delete movies from the favorites database; however, it also
+        // allows users to move, but not remove movies from the movie database. Not ideal
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -111,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements
             // Called when a user swipes left or right on a ViewHolder
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                // Here is where you'll implement swipe to delete
                 int id = (int) viewHolder.itemView.getTag();
 
                 String stringId = Integer.toString(id);
@@ -126,7 +124,9 @@ public class MainActivity extends AppCompatActivity implements
 
         // This little snippet checks to see if we have any saved data from a
         // previous session and loads it into the adapter.
-        if (savedInstanceState != null) {
+        // Side note... This only works when using the favorites database or when there is no network
+        // connectivity due to the immediate sync always being called in onCreate
+        if(savedInstanceState != null) {
             Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable("KeyForLayoutManagerState");
             mMovieRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
         }
@@ -309,12 +309,27 @@ public class MainActivity extends AppCompatActivity implements
      * @param outState
      */
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putParcelable("KeyForLayoutManagerState", mMovieRecyclerView.getLayoutManager().onSaveInstanceState());
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        mListState = savedInstanceState.getParcelable("KeyForLayoutManagerState");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if(mListState != null){
+            mMovieRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
+        }
+    }
 
     /**
      * When a menu option is clicked we walk over here and save the choice into shared

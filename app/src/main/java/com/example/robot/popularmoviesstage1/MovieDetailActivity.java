@@ -24,7 +24,7 @@ import com.example.robot.popularmoviesstage1.utilities.PopularMoviesUtils;
 import com.squareup.picasso.Picasso;
 
 public class MovieDetailActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor>{
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = MovieDetailActivity.class.getSimpleName();
 
@@ -95,34 +95,39 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
         /**
          *   Let's get the intent from Main, and if it has data
-         *   pull it out and attach it to the view parts.
+         *   pull it out and attach it to the view parts
          **/
-        Intent intentThatStartedThisActivity = getIntent();
 
-        if (intentThatStartedThisActivity != null) {
-
-            mUri = intentThatStartedThisActivity.getData();
-
-            if(mUri == null) {
-                throw new NullPointerException("uri is null");
+        if (savedInstanceState != null) {
+            String savedUri = savedInstanceState.getString("savedUri");
+            mUri = Uri.parse(savedUri);
+            getSupportLoaderManager().restartLoader(ID_DETAIL_ACTIVITY_LOADER, null, this);
+        }else {
+            Intent intentThatStartedThisActivity = getIntent();
+            if (intentThatStartedThisActivity != null) {
+                mUri = intentThatStartedThisActivity.getData();
             }
-                String movieId = mUri.getLastPathSegment();
-                MovieSyncUtils.startSyncForReviews(this, Integer.parseInt(movieId));
-                MovieSyncUtils.startSyncForTrailers(this, Integer.parseInt(movieId));
-                getSupportLoaderManager().initLoader(ID_DETAIL_ACTIVITY_LOADER, null, this);
-
         }
+
+        if (mUri == null) {
+            throw new NullPointerException("uri is null");
+        }
+        String movieId = mUri.getLastPathSegment();
+        MovieSyncUtils.startSyncForReviews(this, Integer.parseInt(movieId));
+        MovieSyncUtils.startSyncForTrailers(this, Integer.parseInt(movieId));
+        getSupportLoaderManager().initLoader(ID_DETAIL_ACTIVITY_LOADER, null, this);
+
 
         mTrailerPlay.setOnClickListener(new View.OnClickListener() {
 
             @Override
-            public void onClick(View v){
+            public void onClick(View v) {
                 Intent implicit = new Intent(Intent.ACTION_VIEW, Uri.parse(YoutubeTrailerLink));
                 startActivity(implicit);
             }
         });
 
-        mFavorite.setOnClickListener(new View.OnClickListener(){
+        mFavorite.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -135,7 +140,7 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        switch(id){
+        switch (id) {
             case ID_DETAIL_ACTIVITY_LOADER:
                 return new CursorLoader(this,
                         mUri,
@@ -143,8 +148,8 @@ public class MovieDetailActivity extends AppCompatActivity implements
                         null,
                         null,
                         null);
-                default:
-                    throw new RuntimeException("Loader not implemented: " + id);
+            default:
+                throw new RuntimeException("Loader not implemented: " + id);
         }
     }
 
@@ -152,7 +157,7 @@ public class MovieDetailActivity extends AppCompatActivity implements
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         String cursorTrailer;
 
-        if(data == null) return;
+        if (data == null) return;
 
         data.moveToNext();
 
@@ -170,7 +175,7 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
     }
 
-    public void assignValues(Cursor data){
+    public void assignValues(Cursor data) {
 
         cursorTitle = data.getString(MOVIE_INDEX_TITLE);
         cursorReleaseDate = data.getString(MOVIE_INDEX_RELEASE_DATE);
@@ -192,7 +197,7 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
     }
 
-    private void trailerLinkBuilder(String youtubeKey){
+    private void trailerLinkBuilder(String youtubeKey) {
         String youtubeLink = "https://www.youtube.com/watch?v=";
         String trailerLink = youtubeLink + youtubeKey;
         YoutubeTrailerLink = trailerLink;
@@ -212,10 +217,17 @@ public class MovieDetailActivity extends AppCompatActivity implements
         Uri newUri = getContentResolver().insert(
                 MovieContract.MovieEntry.CONTENT_URI_FAVORITES, values);
 
-        if (newUri == null){
+        if (newUri == null) {
             Toast.makeText(this, "Error adding to favorites",
                     Toast.LENGTH_SHORT).show();
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        String stringUri = mUri.toString();
+        Log.d("uriSaving", "Uri = " + stringUri);
+        outState.putString("savedUri", stringUri);
+    }
 }
