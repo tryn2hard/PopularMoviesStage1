@@ -65,9 +65,11 @@ public class MainActivity extends AppCompatActivity implements
 
     private MovieAdapter mMovieAdapter;
 
-    private int mPosition = RecyclerView.NO_POSITION;
+    private static RecyclerView.LayoutManager mLayoutManager;
 
-    private Parcelable mListState;
+    private static Bundle mBundleRecyclerViewState;
+
+    private final String KEY_RECYCLER_STATE = "recycler_state";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,10 +84,12 @@ public class MainActivity extends AppCompatActivity implements
 
 
         // Checks orientation and displays either two or three posters in port and land respectively
-        if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mMovieRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+      if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mLayoutManager = new GridLayoutManager(this, 2);
+            mMovieRecyclerView.setLayoutManager(mLayoutManager);
         } else {
-            mMovieRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
+            mLayoutManager = new GridLayoutManager(this, 3);
+            mMovieRecyclerView.setLayoutManager(mLayoutManager);
         }
 
         mMovieRecyclerView.setHasFixedSize(true);
@@ -96,11 +100,6 @@ public class MainActivity extends AppCompatActivity implements
         // Attaching the adapter to the recyclerView
         mMovieRecyclerView.setAdapter(mMovieAdapter);
 
-        // Start the cursorLoader
-        getSupportLoaderManager().initLoader(ID_MOVIE_LOADER, null, this);
-
-        // Using the touch helper to delete movies from the favorites database; however, it also
-        // allows users to move, but not remove movies from the movie database. Not ideal
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -122,34 +121,35 @@ public class MainActivity extends AppCompatActivity implements
         }).attachToRecyclerView(mMovieRecyclerView);
 
 
-        // This little snippet checks to see if we have any saved data from a
-        // previous session and loads it into the adapter.
-        // Side note... This only works when using the favorites database or when there is no network
-        // connectivity due to the immediate sync always being called in onCreate
-        if(savedInstanceState != null) {
-            Parcelable savedRecyclerLayoutState = savedInstanceState.getParcelable("KeyForLayoutManagerState");
-            mMovieRecyclerView.getLayoutManager().onRestoreInstanceState(savedRecyclerLayoutState);
-        }
-
         // More linking of views to their variables
         mLoadingIndicator = findViewById(R.id.pb_loading_indicator);
 
         // Show the progress bar
         showLoading();
 
-        // Here we have our network connectivity check. If the connectivity is no good
-        // then we display an error message.
-        ConnectivityManager cm =
-                (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        @SuppressWarnings("ConstantConditions") NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null &&
-                activeNetwork.isConnectedOrConnecting();
-
-        // if there is internet connectivity and the sort request is not equal to favorites launch the service
-        if (isConnected && !sort_request.equals(SORT_PREF_FAV)) {
-            MovieSyncUtils.startImmediateSync(this, sort_request);
+        if(savedInstanceState != null){
+            Parcelable mListState = savedInstanceState.getParcelable(KEY_RECYCLER_STATE);
+            Log.d("onCreate", "State has been restored");
+            mLayoutManager.onRestoreInstanceState(mListState);
         }
+
+        // if the sort request is not equal to favorites launch the service
+        if (!sort_request.equals(SORT_PREF_FAV) && savedInstanceState == null) {
+
+            ConnectivityManager cm =
+                    (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+            @SuppressWarnings("ConstantConditions") NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+            boolean isConnected = activeNetwork != null &&
+                    activeNetwork.isConnectedOrConnecting();
+            if(isConnected) {
+                Log.d("Sync", "Movies have been sync'd");
+                MovieSyncUtils.startImmediateSync(this, sort_request);
+            }
+        }
+
+        // Start the cursorLoader
+        getSupportLoaderManager().initLoader(ID_MOVIE_LOADER, null, this);
 
     }
 
@@ -212,8 +212,6 @@ public class MainActivity extends AppCompatActivity implements
 
         mLoadingIndicator.setVisibility(View.INVISIBLE);
         mMovieAdapter.swapCursor(data);
-        if (mPosition == RecyclerView.NO_POSITION) mPosition = 0;
-        mMovieRecyclerView.smoothScrollToPosition(mPosition);
         if (data.getCount() != 0) showMovieDataView();
     }
 
@@ -295,7 +293,6 @@ public class MainActivity extends AppCompatActivity implements
             sort_select = SORT_PREF_FAV;
             storePref(sort_select);
             sort_request = SORT_PREF_FAV;
-            //todo tell the acitivty to display favorites list
             getSupportLoaderManager().restartLoader(ID_MOVIE_LOADER, null, this);
         }
         return super.onOptionsItemSelected(item);
@@ -311,24 +308,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
-        outState.putParcelable("KeyForLayoutManagerState", mMovieRecyclerView.getLayoutManager().onSaveInstanceState());
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        mListState = savedInstanceState.getParcelable("KeyForLayoutManagerState");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if(mListState != null){
-            mMovieRecyclerView.getLayoutManager().onRestoreInstanceState(mListState);
-        }
+        Log.d("onSaveInstanceState", "State has been saved");
+        outState.putParcelable(KEY_RECYCLER_STATE, mLayoutManager.onSaveInstanceState());
     }
 
     /**
