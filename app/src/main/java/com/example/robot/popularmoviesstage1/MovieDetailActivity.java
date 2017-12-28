@@ -1,15 +1,19 @@
 package com.example.robot.popularmoviesstage1;
 
+
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewDebug;
@@ -17,14 +21,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.robot.popularmoviesstage1.databinding.ActivityMovieDetailBinding;
 import com.example.robot.popularmoviesstage1.data.MovieContract;
 import com.example.robot.popularmoviesstage1.data.MovieDbHelper;
 import com.example.robot.popularmoviesstage1.sync.MovieSyncUtils;
 import com.example.robot.popularmoviesstage1.utilities.PopularMoviesUtils;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class MovieDetailActivity extends AppCompatActivity implements
-        LoaderManager.LoaderCallbacks<Cursor> {
+        LoaderManager.LoaderCallbacks<Cursor>,
+        TrailerAdapter.TrailerAdapterOnClickHandler {
 
     private static final String TAG = MovieDetailActivity.class.getSimpleName();
 
@@ -36,7 +46,7 @@ public class MovieDetailActivity extends AppCompatActivity implements
             MovieContract.MovieEntry.COLUMN_VOTE_AVG,
             MovieContract.MovieEntry.COLUMN_SYNOPSIS,
             MovieContract.MovieEntry.COLUMN_TRAILERS,
-            MovieContract.MovieEntry.COLUMN_REVIEWS,};
+            MovieContract.MovieEntry.COLUMN_REVIEWS};
 
     private static final int MOVIE_INDEX_MOVIE_ID = 0;
     private static final int MOVIE_INDEX_TITLE = 1;
@@ -52,7 +62,9 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
     private Uri mUri;
 
-    private String YoutubeTrailerLink;
+    private static Cursor mCursor;
+
+    private ActivityMovieDetailBinding mBinding;
 
     private String cursorTitle;
     private String cursorPoster;
@@ -63,35 +75,12 @@ public class MovieDetailActivity extends AppCompatActivity implements
     private int cursorMovieId;
     private String cursorTrailer;
 
-
-    // Variable declarations
-    TextView mMovieTitle;
-    ImageView mMoviePoster;
-    TextView mMovieSynopsis;
-    TextView mMovieReleaseDate;
-    TextView mMovieRating;
-    TextView mReviews;
-    TextView mTrailers;
-    ImageView mTrailerPlay;
-    ImageView mFavorite;
-
+    private RecyclerView mTrailerRecycler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_detail);
-
-
-        // Linking the variables to their respective view parts.
-        mMovieTitle = findViewById(R.id.tv_movie_title);
-        mMovieSynopsis = findViewById(R.id.tv_detail_synopsis);
-        mMovieReleaseDate = findViewById(R.id.tv_detail_release_date);
-        mMovieRating = findViewById(R.id.tv_detail_rating);
-        mMoviePoster = findViewById(R.id.iv_detail_movie_poster);
-        mReviews = findViewById(R.id.tv_detail_reviews);
-        mTrailers = findViewById(R.id.tv_detail_trailers);
-        mTrailerPlay = findViewById(R.id.iv_detail_trailer_play);
-        mFavorite = findViewById(R.id.iv_detail_favorites);
 
         /**
          *   Let's get the intent from Main, and if it has data
@@ -109,25 +98,18 @@ public class MovieDetailActivity extends AppCompatActivity implements
             }
         }
 
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_movie_detail);
+
         if (mUri == null) {
             throw new NullPointerException("uri is null");
         }
         String movieId = mUri.getLastPathSegment();
-        MovieSyncUtils.startSyncForReviews(this, Integer.parseInt(movieId));
         MovieSyncUtils.startSyncForTrailers(this, Integer.parseInt(movieId));
+        MovieSyncUtils.startSyncForReviews(this, Integer.parseInt(movieId));
+
         getSupportLoaderManager().initLoader(ID_DETAIL_ACTIVITY_LOADER, null, this);
 
-
-        mTrailerPlay.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Intent implicit = new Intent(Intent.ACTION_VIEW, Uri.parse(YoutubeTrailerLink));
-                startActivity(implicit);
-            }
-        });
-
-        mFavorite.setOnClickListener(new View.OnClickListener() {
+             mBinding.ivDetailFavorites.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -155,18 +137,17 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        String cursorTrailer;
+        mCursor = data;
 
-        if (data == null) return;
+        if (mCursor == null) return;
 
-        data.moveToNext();
+        mCursor.moveToNext();
 
-        assignValues(data);
+        fillUiWithData(mCursor);
 
-        cursorTrailer = data.getString(MOVIE_INDEX_TRAILERS);
+        assignValuesFromCursor(mCursor);
 
-        trailerLinkBuilder(cursorTrailer);
-
+        stringBreak(mCursor.getString(MOVIE_INDEX_TRAILERS));
     }
 
     @Override
@@ -175,32 +156,34 @@ public class MovieDetailActivity extends AppCompatActivity implements
 
     }
 
-    public void assignValues(Cursor data) {
+    private void fillUiWithData(Cursor data) {
+        mBinding.tvMovieTitle.setText(data.getString(MOVIE_INDEX_TITLE));
+        mBinding.tvDetailReleaseDate.setText(data.getString(MOVIE_INDEX_RELEASE_DATE));
+        String cursorPoster = data.getString(MOVIE_INDEX_MOVIE_POSTER);
+        mBinding.tvDetailRating.setText(Integer.toString(data.getInt(MOVIE_INDEX_VOTE_AVG)));
+        mBinding.tvDetailSynopsis.setText(data.getString(MOVIE_INDEX_SYNOPSIS));
+        mBinding.tvDetailReviews.setText(data.getString(MOVIE_INDEX_REVIEWS));
 
+        String posterUrl = PopularMoviesUtils.imageUrlBuilder(cursorPoster);
+        Picasso.with(this).load(posterUrl).into(mBinding.ivDetailMoviePoster);
+    }
+
+    private void assignValuesFromCursor(Cursor data){
         cursorTitle = data.getString(MOVIE_INDEX_TITLE);
-        cursorReleaseDate = data.getString(MOVIE_INDEX_RELEASE_DATE);
         cursorPoster = data.getString(MOVIE_INDEX_MOVIE_POSTER);
-        cursorRating = data.getInt(MOVIE_INDEX_VOTE_AVG);
         cursorSynopsis = data.getString(MOVIE_INDEX_SYNOPSIS);
+        cursorReleaseDate = data.getString(MOVIE_INDEX_RELEASE_DATE);
+        cursorRating = data.getInt(MOVIE_INDEX_VOTE_AVG);
         cursorReviews = data.getString(MOVIE_INDEX_REVIEWS);
         cursorMovieId = data.getInt(MOVIE_INDEX_MOVIE_ID);
         cursorTrailer = data.getString(MOVIE_INDEX_TRAILERS);
-
-
-        mMovieTitle.setText(cursorTitle);
-        mMovieReleaseDate.setText(cursorReleaseDate);
-        String posterUrl = PopularMoviesUtils.imageUrlBuilder(cursorPoster);
-        Picasso.with(this).load(posterUrl).into(mMoviePoster);
-        mMovieRating.setText(Integer.toString(cursorRating));
-        mMovieSynopsis.setText(cursorSynopsis);
-        mReviews.setText(cursorReviews);
-
     }
 
-    private void trailerLinkBuilder(String youtubeKey) {
+
+    private String trailerLinkBuilder(String youtubeKey) {
         String youtubeLink = "https://www.youtube.com/watch?v=";
         String trailerLink = youtubeLink + youtubeKey;
-        YoutubeTrailerLink = trailerLink;
+        return trailerLink;
     }
 
     private void addToFavorites() {
@@ -223,6 +206,31 @@ public class MovieDetailActivity extends AppCompatActivity implements
         }
     }
 
+    public void stringBreak(String trailers) {
+        if (trailers != null) {
+            String[] elements = trailers.split(", ");
+            List<String> fixedLengthList = Arrays.asList(elements);
+            ArrayList<String> trailerList = new ArrayList<String>(fixedLengthList);
+            Log.d("stringBreak", "Passed in string = " + trailers);
+            Log.d("stringBreak_list", "List " + trailerList);
+            adapterStarter(trailerList);
+        }
+
+    }
+
+    private void adapterStarter(ArrayList<String> movieTrailers){
+
+        mTrailerRecycler = mBinding.recyclerviewTrailers;
+
+        mTrailerRecycler.setLayoutManager(new LinearLayoutManager(this));
+
+        mTrailerRecycler.setHasFixedSize(true);
+
+        if(movieTrailers != null) {
+            TrailerAdapter adapter = new TrailerAdapter(this, movieTrailers, this);
+            mTrailerRecycler.setAdapter(adapter);
+        }
+    }
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -230,4 +238,16 @@ public class MovieDetailActivity extends AppCompatActivity implements
         Log.d("uriSaving", "Uri = " + stringUri);
         outState.putString("savedUri", stringUri);
     }
+
+    @Override
+    public void onClick(String trailerId) {
+        if(trailerId != null) {
+            String trailerLink;
+            trailerLink = trailerLinkBuilder(trailerId);
+            Intent implicit = new Intent(Intent.ACTION_VIEW, Uri.parse(trailerLink));
+            startActivity(implicit);
+        }
+
+    }
+
 }

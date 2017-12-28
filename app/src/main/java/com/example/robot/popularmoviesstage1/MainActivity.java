@@ -67,8 +67,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private static RecyclerView.LayoutManager mLayoutManager;
 
-    private static Bundle mBundleRecyclerViewState;
-
     private final String KEY_RECYCLER_STATE = "recycler_state";
 
     @Override

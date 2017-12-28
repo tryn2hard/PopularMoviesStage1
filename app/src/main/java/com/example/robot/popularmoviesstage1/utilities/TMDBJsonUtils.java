@@ -4,6 +4,7 @@ package com.example.robot.popularmoviesstage1.utilities;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.example.robot.popularmoviesstage1.data.MovieContract;
@@ -11,6 +12,8 @@ import com.example.robot.popularmoviesstage1.data.MovieContract;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 
 /**
@@ -99,17 +102,24 @@ public final class TMDBJsonUtils {
     public static ContentValues getTrailers (Context context, String trailersJsonString)
             throws JSONException {
 
-        JSONObject reviewsJson = new JSONObject(trailersJsonString);
+        ArrayList<String> reviewLinks = new ArrayList<>();
 
-        JSONArray results = reviewsJson.getJSONArray(TMDB_RESULTS);
+        JSONObject trailersJson = new JSONObject(trailersJsonString);
 
-        ContentValues reviewContentValues = new ContentValues();
+        JSONArray results = trailersJson.getJSONArray(TMDB_RESULTS);
 
-        JSONObject r = results.getJSONObject(0);
-        String videos = r.getString(TMDB_VIDEOS);
-        Log.d("TMDBJsonUtils", videos);
-        reviewContentValues.put(MovieContract.MovieEntry.COLUMN_TRAILERS, videos);
+        ContentValues trailerContentValues = new ContentValues();
 
-        return reviewContentValues;
+        for (int i = 0; i < results.length(); i++) {
+
+            JSONObject r = results.getJSONObject(i);
+            String videos = r.getString(TMDB_VIDEOS);
+            Log.d("TMDBJsonUtils", videos);
+            reviewLinks.add(videos);
+        }
+        String stringValuesForAllTrailers = TextUtils.join(", ", reviewLinks);
+        trailerContentValues.put(MovieContract.MovieEntry.COLUMN_TRAILERS, stringValuesForAllTrailers);
+        Log.d("TMDBJsonUtils", stringValuesForAllTrailers);
+        return trailerContentValues;
     }
 }

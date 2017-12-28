@@ -232,7 +232,7 @@ public class MovieProvider extends ContentProvider {
 
             case CODE_MOVIE_WITH_ID:
                 selection = MovieContract.MovieEntry.COLUMN_MOVIE_ID + "=?";
-                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+                selectionArgs = new String[]{uri.getLastPathSegment()};
 
                SQLiteDatabase database = mMovieHelper.getWritableDatabase();
 
