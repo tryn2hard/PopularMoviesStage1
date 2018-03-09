@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements
      * @param id
      */
     @Override
-    public void onClick(int id) {
+    public void onClick (int id) {
         Uri passingUri;
         Context context = this;
         Log.d("debug Main", "movie id " + id);
